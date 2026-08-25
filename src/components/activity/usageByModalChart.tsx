@@ -16,20 +16,7 @@ type ChartData = {
   nemotron9b: number;
   nemotron3: number;
 };
-function CustomChartCursor(props: any) {
-  const { x, y, width, height } = props;
 
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill="var(--color-chart-hover-surface)"
-      pointerEvents="none"
-    />
-  );
-}
 function UsageByModelTooltip({
   active,
   label,
@@ -118,7 +105,6 @@ export function UsageByModelChart({
     "all" | "gpt" | "nemotron3" | "nemotron9b"
   >("all");
 const [isLegendRight, setIsLegendRight] = useState(false);
-const [activeTab, setActiveTab] = useState("Overview");
   /*
     When legend is on the right,
     chart width is smaller → show fewer labels.

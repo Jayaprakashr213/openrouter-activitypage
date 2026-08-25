@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
   ChevronDown,
-  Search,
-  MoreVertical,
   Maximize2,
 } from "lucide-react";
 import { metricOptions,modelOptions,subgroupOptions,rollupOptions,topBottomOptions,limitOptions,rankByOptions} from "../../utils/filterOptions";
@@ -43,17 +41,15 @@ const modelUsageData: ModelUsage[] = [
 ];
 
 export function ExploreTab() {
-  const [groupOpen, setGroupOpen] = useState(false);
-const [metricOpen, setMetricOpen] = useState(false);
-const [metricSearch, setMetricSearch] = useState("");
+
 
 const [activeDropdown, setActiveDropdown] =
   useState<ActiveDropdown>(null);
-  const toggleDropdown = (dropdown: ActiveDropdown) => {
-  setActiveDropdown((current) =>
-    current === dropdown ? null : dropdown
-  );
-};
+//   const toggleDropdown = (dropdown: ActiveDropdown) => {
+//   setActiveDropdown((current) =>
+//     current === dropdown ? null : dropdown
+//   );
+// };
 const [selectedMetric, setSelectedMetric] = useState(
   "Total Usage ($)"
 );
@@ -65,10 +61,10 @@ const [selectedModel, setSelectedModel] = useState(
 const [selectedSubgroup, setSelectedSubgroup] = useState(
   "Subgroup"
 );
-const [rollupOpen, setRollupOpen] = useState(false);
-const [topOpen, setTopOpen] = useState(false);
-const [limitOpen, setLimitOpen] = useState(false);
-const [rankByOpen, setRankByOpen] = useState(false);
+// const [rollupOpen, setRollupOpen] = useState(false);
+// const [topOpen, setTopOpen] = useState(false);
+// const [limitOpen, setLimitOpen] = useState(false);
+// const [rankByOpen, setRankByOpen] = useState(false);
 
 const [selectedRollup, setSelectedRollup] = useState("Total");
 const [selectedTop, setSelectedTop] = useState("Top");

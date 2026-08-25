@@ -22,7 +22,6 @@ PanelRight
 } from "lucide-react";
 
 export type ChartType = "line" | "bar" | "area";
-
 export type TrendData = {
   date: string;
   [key: string]: string | number;
@@ -30,7 +29,7 @@ export type TrendData = {
 
 export type TrendSeries = {
   key: string;
-  name: string;
+  label: string;
   color: string;
 };
 
@@ -41,6 +40,7 @@ type TrendsChartProps = {
   type?: ChartType;
   yAxisFormatter?: (value: number) => string;
 };
+
 type CustomTickProps = {
   x?: string | number;
   y?: string | number;
@@ -121,14 +121,14 @@ export function TrendsChart({
 
   const [isLegendRight, setIsLegendRight] = useState(false);
 
- const fullVisibleLabels = data.map((item) => item.date);
+//  const fullVisibleLabels = data.map((item) => item.date);
 
-/*
-  Labels when legend is on the right side
-*/
-const rightLegendVisibleLabels = data
-  .filter((_, index) => index % 2 === 0)
-  .map((item) => item.date);
+// /*
+//   Labels when legend is on the right side
+// */
+// const rightLegendVisibleLabels = data
+//   .filter((_, index) => index % 2 === 0)
+//   .map((item) => item.date);
 
 const labelStep = isLegendRight ? 3 : 2;
 
@@ -347,7 +347,7 @@ const visibleLabels = data
                   />
 
                   <span className="truncate">
-                    {item.name}
+                    {item.label}
                   </span>
                 </div>
               ))}
@@ -371,7 +371,7 @@ const visibleLabels = data
           }}
         />
 
-        <span>{item.name}</span>
+        <span>{item.label}</span>
       </div>
     ))}
   </div>

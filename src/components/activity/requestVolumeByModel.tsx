@@ -260,7 +260,7 @@ const visibleDateIndexes = isLegendOnRight
       "nemotronNano9BV2",
     ]);
 
-    const [activeTab, setActiveTab] = useState("overview");
+    // const [activeTab, setActiveTab] = useState("overview");
 const handleLegendClick = (key: ModelKey) => {
   setActiveSeries((prev) => {
     const onlySelected =
@@ -339,7 +339,7 @@ return (
 
  <button
   type="button"
-  onClick={() => setActiveTab("Explore")}
+  // onClick={() => setActiveTab("Explore")}
   className="
     ml-auto
     cursor-pointer

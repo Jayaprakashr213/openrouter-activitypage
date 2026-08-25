@@ -347,17 +347,17 @@ export const modelTrendData = [
 export const modelTrendSeries = [
   {
     key: "gpt",
-    name: "gpt-oss-20b",
+    label: "gpt-oss-20b",
     color: "var(--color-chart-gpt)",
   },
   {
     key: "nemotron9b",
-    name: "Nemotron Nano 9B V2",
+    label: "Nemotron Nano 9B V2",
     color: "var(--color-chart-nemotron-9b)",
   },
   {
     key: "nemotron3",
-    name: "Nemotron 3 Nano Omni",
+    label: "Nemotron 3 Nano Omni",
     color: "var(--color-chart-nemotron-3)",
   },
 ];
@@ -386,18 +386,18 @@ export const modelTokenTrendData = [
 
 export const modelTokenTrendSeries = [
   {
-    dataKey: "gpt",
-    name: "gpt-oss-20b",
+    key: "gpt",
+    label: "gpt-oss-20b",
     color: "#2f80c0",
   },
   {
-    dataKey: "nemotron9b",
-    name: "Nemotron Nano 9B V2",
+    key: "nemotron9b",
+    label: "Nemotron Nano 9B V2",
     color: "#82a91f",
   },
   {
-    dataKey: "nemotron3",
-    name: "Nemotron 3 Nano Omni",
+    key: "nemotron3",
+    label: "Nemotron 3 Nano Omni",
     color: "#1f9d7a",
   },
 ];
@@ -421,18 +421,18 @@ export const modelSpendTrendData = [
 
 export const modelSpendTrendSeries = [
   {
-    dataKey: "gpt",
-    name: "gpt-oss-20b",
+    key: "gpt",
+    label: "gpt-oss-20b",
     color: "#2f80c0",
   },
   {
-    dataKey: "nemotron9b",
-    name: "Nemotron Nano 9B V2",
+    key: "nemotron9b",
+    label: "Nemotron Nano 9B V2",
     color: "#82a91f",
   },
   {
-    dataKey: "nemotron3",
-    name: "Nemotron 3 Nano Omni",
+    key: "nemotron3",
+    label: "Nemotron 3 Nano Omni",
     color: "#1f9d7a",
   },
 ];
@@ -472,7 +472,7 @@ export const apiKeyRequestTrendData = [
 export const apiKeyRequestTrendSeries = [
   {
     key: "apiBuilder",
-    name: "api builder",
+    label: "api builder",
     color: "#f5a623",
   },
 ];
@@ -512,7 +512,7 @@ export const apiKeyTokenTrendData = [
 export const apiKeyTokenTrendSeries = [
   {
     key: "apiBuilder",
-    name: "api builder",
+    label: "api builder",
     color: "#f5a623",
   },
 ];
@@ -552,7 +552,7 @@ export const apiKeySpendTrendData = [
 export const apiKeySpendTrendSeries = [
   {
     key: "apiBuilder",
-    name: "api builder",
+    label: "api builder",
     color: "#f5a623",
   },
 ];

@@ -24,6 +24,7 @@ import { ChevronDown } from "lucide-react";
 import {
   TrendingCard,
   type TrendingItem,
+  
 } from "../components/activity/trendingCard";
 import type { ChartType } from "../components/activity/trendsChart";
 import { ExploreTab } from "../components/activity/exploreTab";
@@ -38,12 +39,23 @@ import {
   appTokenTrendData,
   appTokenTrendSeries,
 } from "../utils/filterOptions";
-const appTrendConfig = {
+import type{ TrendData,TrendSeries } from "../components/activity/trendsChart";
+type TrendConfig = {
+  title: string;
+  data: TrendData[];
+  series: TrendSeries[];
+  trendingItems: TrendingItem[];
+};
+
+const appTrendConfig: Record<
+  "Spend" | "Requests" | "Tokens",
+  TrendConfig
+> = {
   Spend: {
     title: "Spend over time",
     data: appSpendTrendData,
     series: appSpendTrendSeries,
-    trendingItems: [] as TrendingItem[],
+    trendingItems: [],
   },
 
   Requests: {
@@ -76,12 +88,16 @@ const appTrendConfig = {
     ],
   },
 };
-const modelTrendConfig = {
+
+const modelTrendConfig: Record<
+  "Spend" | "Requests" | "Tokens",
+  TrendConfig
+> = {
   Spend: {
     title: "Spend over time",
     data: modelSpendTrendData,
     series: modelSpendTrendSeries,
-    trendingItems: [] as TrendingItem[],
+    trendingItems: [],
   },
 
   Requests: {
@@ -135,12 +151,16 @@ const modelTrendConfig = {
     ],
   },
 };
-const apiKeyTrendConfig = {
+
+const apiKeyTrendConfig: Record<
+  "Spend" | "Requests" | "Tokens",
+  TrendConfig
+> = {
   Spend: {
     title: "Spend over time",
     data: apiKeySpendTrendData,
     series: apiKeySpendTrendSeries,
-    trendingItems: [] as TrendingItem[],
+    trendingItems: [],
   },
 
   Requests: {
@@ -189,6 +209,7 @@ const selectedAppTrendConfig =
     useState<number | null>(null);
 const [trendChartType, setTrendChartType] =
   useState<ChartType>("line");
+  console.log(setTrendChartType)
   const [apiKeyTrendMetric, setApiKeyTrendMetric] = useState<
   "Spend" | "Requests" | "Tokens"
 >("Requests");
@@ -211,9 +232,9 @@ const [
 const [trendMetric, setTrendMetric] = useState<
   "Spend" | "Requests" | "Tokens"
 >("Requests");
-const [trendSection, setTrendSection] = useState<
-  "Models" | "API Keys" | "Apps"
->("Models");
+// const [trendSection, setTrendSection] = useState<
+//   "Models" | "API Keys" | "Apps"
+// >("Models");
 const [trendDropdownOpen, setTrendDropdownOpen] = useState(false);
   // Total spend - straight line
   const selectedTrendConfig = modelTrendConfig[trendMetric];

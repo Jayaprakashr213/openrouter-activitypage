@@ -1,16 +1,5 @@
 import { Search, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { useEffect, useRef, } from "react";
-import {
-  MoreVertical,
-  Download,
-  FileText,
-  Bookmark,
-  ChevronRight,
-  BarChart3,
-  LineChart,
-  ChartNoAxesCombined,
-} from "lucide-react";
 type ActivityDropdownProps = {
   value: string;
   options: string[];

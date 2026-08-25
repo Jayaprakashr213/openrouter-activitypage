@@ -1,5 +1,5 @@
 
-import { TrendingUp, ArrowUp, ChevronRight } from "lucide-react";
+import { ArrowUp, ChevronRight } from "lucide-react";
 
 export type TrendingItem = {
   id: string;
