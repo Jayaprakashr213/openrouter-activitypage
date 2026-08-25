@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --font-family: Inter, system-ui, sans-serif;
+  --top-nav-height: 4rem;
+
+  /* FONT SIZES */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  /* BRAND COLORS */
+  --color-primary: #6d28d9;
+  --color-primary-hover: #5b21b6;
+
+  /* SURFACES */
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f7f7f8;
+
+  /* SIDEBAR */
+  --color-sidebar-active: #f3e8ff;
+
+  /* TEXT */
+  --color-text: #111111;
+  --color-text-secondary: #6b7280;
+
+  /* BORDERS */
+  --color-border: #e5e7eb;
+
+  /* CHART COLORS */
+  --color-chart-gpt: #24a699;
+  --color-chart-nemotron-9b: #8cad27;
+  --color-chart-nemotron-3: #2b7fc7;
+
+  /* CHART HOVER */
+  --color-chart-hover-surface: rgba(17, 17, 17, 0.04);
+
+  /* TOOLTIP */
+  --color-tooltip-background: #1f252b;
+  --color-tooltip-text: #ffffff;
+
+  /* SHADOWS */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
