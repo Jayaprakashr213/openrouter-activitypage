@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { PanelRight,PanelBottom } from "lucide-react";
 type ChartData = {
   date: string;
   byok: number;
@@ -54,7 +54,9 @@ const getDatePosition = (
 export function UsageTypeChart() {
   const [hoveredIndex, setHoveredIndex] =
     useState<number | null>(null);
-
+const [isLegendOnRight, setIsLegendOnRight] =
+  useState(false);
+ 
   const [activeSeries, setActiveSeries] = useState<
     "byok" | "openrouterSpend" | null
   >(null);
@@ -89,18 +91,35 @@ export function UsageTypeChart() {
 
   // Only these dates have permanent grid lines and labels.
   // All other dates are still available on hover.
-  const visibleDateIndexes = [
-    0,
-    2,
-    4,
-    6,
-    8,
-    11,
-    14,
-    17,
-    20,
-    22,
-  ];
+const bottomLegendDateIndexes = [
+  0,
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20,
+  22,
+];
+
+const rightLegendDateIndexes = [
+  0,
+  3,
+  6,
+  9,
+  12,
+  15,
+  18,
+  21,
+];
+
+const visibleDateIndexes = isLegendOnRight
+  ? rightLegendDateIndexes
+  : bottomLegendDateIndexes;
 
   return (
     <div
@@ -139,84 +158,36 @@ export function UsageTypeChart() {
       </div>
 
       {/* CHART */}
-   <div
-  className="relative h-[250px]"
-  onMouseLeave={() => setHoveredIndex(null)}
->
-  {/* CHART BORDER */}
+    {/* CHART + RIGHT LEGEND */}
+
+  {/* CHART */}
+<div className="flex min-w-0">
+  {/* CHART */}
   <div
     className="
-      absolute
-      inset-x-0
-      top-0
-      h-[200px]
-      border
-      border-dashed
-      border-[var(--color-border)]
+      relative
+      h-[275px]
+      min-w-0
+      flex-1
     "
-  />
+    onMouseLeave={() => setHoveredIndex(null)}
+  >
+    {/* CHART BORDER */}
+    <div
+      className="
+        absolute
+        inset-x-0
+        top-0
+        h-[240px]
+        border
+        border-dashed
+        border-[var(--color-border)]
+      "
+    />
 
-  {/* ONLY VISIBLE DATE GRID LINES */}
-  {visibleDateIndexes.map((index) => {
-    const item = chartData[index];
-
-    const left = getDatePosition(
-      item.date,
-      startDate,
-      totalDays,
-    );
-
-    return (
-      <div
-        key={item.date}
-        className="
-          absolute
-          top-0
-          h-[200px]
-          w-px
-          bg-[var(--color-border)]
-        "
-        style={{
-          left: `${left}%`,
-        }}
-      />
-    );
-  })}
-
-  {/* HOVER AREAS */}
-  {chartData.map((item, index) => {
-    const left = getDatePosition(
-      item.date,
-      startDate,
-      totalDays,
-    );
-
-    return (
-      <div
-        key={item.date}
-        className="
-          absolute
-          top-0
-          z-20
-          h-[200px]
-          -translate-x-1/2
-          cursor-pointer
-        "
-        style={{
-          left: `${left}%`,
-          width: `${100 / chartData.length}%`,
-        }}
-        onMouseEnter={() =>
-          setHoveredIndex(index)
-        }
-      />
-    );
-  })}
-
-  {/* HOVER INDICATOR */}
-  {hoveredIndex !== null &&
-    (() => {
-      const item = chartData[hoveredIndex];
+    {/* ONLY VISIBLE DATE GRID LINES */}
+    {visibleDateIndexes.map((index) => {
+      const item = chartData[index];
 
       const left = getDatePosition(
         item.date,
@@ -225,138 +196,211 @@ export function UsageTypeChart() {
       );
 
       return (
-        <>
-          {/* VERTICAL HOVER LINE */}
-          <div
-            className="
-              absolute
-              top-0
-              z-10
-              h-[200px]
-              w-px
-              bg-[var(--color-border)]
-            "
-            style={{
-              left: `${left}%`,
-            }}
-          />
+        <div
+          key={item.date}
+          className="
+            absolute
+            top-0
+            h-[240px]
+            w-px
+            bg-[var(--color-border)]
+          "
+          style={{
+            left: `${left}%`,
+          }}
+        />
+      );
+    })}
 
-          {/* TOOLTIP */}
+    {/* HOVER AREAS */}
+    {chartData.map((item, index) => {
+      const left = getDatePosition(
+        item.date,
+        startDate,
+        totalDays,
+      );
+
+      return (
+        <div
+          key={item.date}
+          className="
+            absolute
+            top-0
+            z-20
+            h-[240px]
+            -translate-x-1/2
+            cursor-pointer
+          "
+          style={{
+            left: `${left}%`,
+            width: `${100 / chartData.length}%`,
+          }}
+          onMouseEnter={() =>
+            setHoveredIndex(index)
+          }
+        />
+      );
+    })}
+
+    {/* HOVER INDICATOR */}
+    {hoveredIndex !== null &&
+      (() => {
+        const item = chartData[hoveredIndex];
+
+        const left = getDatePosition(
+          item.date,
+          startDate,
+          totalDays,
+        );
+
+        return (
+          <>
+            <div
+              className="
+                absolute
+                top-0
+                z-10
+                h-[240px]
+                w-px
+                bg-[var(--color-border)]
+              "
+              style={{
+                left: `${left}%`,
+              }}
+            />
+
+            <div
+              className="
+                absolute
+                top-[110px]
+                z-30
+                -translate-x-1/2
+                whitespace-nowrap
+                rounded-md
+                bg-[#1f2933]
+                px-2
+                py-1
+                text-xs
+                font-medium
+                text-white
+              "
+              style={{
+                left: `${left}%`,
+              }}
+            >
+              {item.date}
+            </div>
+
+            <div
+              className="
+                absolute
+                top-[145px]
+                z-10
+                h-2
+                w-[35%]
+                -translate-x-1/2
+                rounded-full
+                border
+                border-[var(--color-border)]
+                bg-white
+                shadow-sm
+              "
+              style={{
+                left: `${left}%`,
+              }}
+            />
+          </>
+        );
+      })()}
+
+    {/* DATE LABELS */}
+    <div
+      className="
+        absolute
+        left-0
+        right-0
+        top-[250px]
+      "
+    >
+      {visibleDateIndexes.map((index) => {
+        const item = chartData[index];
+
+        const left = getDatePosition(
+          item.date,
+          startDate,
+          totalDays,
+        );
+
+        const isFirst =
+          index === visibleDateIndexes[0];
+
+        const isLast =
+          index ===
+          visibleDateIndexes[
+            visibleDateIndexes.length - 1
+          ];
+
+        return (
           <div
+            key={item.date}
             className="
               absolute
-              top-[110px]
-              z-30
-              -translate-x-1/2
               whitespace-nowrap
-              rounded-md
-              bg-[#1f2933]
-              px-2
-              py-1
-              text-xs
-              font-medium
-              text-white
+              text-[11px]
+              text-[var(--color-text-muted)]
             "
             style={{
               left: `${left}%`,
+              transform: isFirst
+                ? "translateX(-10%)"
+                : isLast
+                  ? "translateX(-100%)"
+                  : "translateX(-50%)",
             }}
           >
-            {item.date}
+            {shortDate(item.date)}
           </div>
+        );
+      })}
+    </div>
+  </div>
 
-          {/* HOVER HORIZONTAL BAR */}
-          <div
-            className="
-              absolute
-              top-[145px]
-              z-10
-              h-2
-              w-[35%]
-              -translate-x-1/2
-              rounded-full
-              border
-              border-[var(--color-border)]
-              bg-white
-              shadow-sm
-            "
-            style={{
-              left: `${left}%`,
-            }}
-          />
-        </>
-      );
-    })()}
-
-  {/* DATE LABELS */}
- {/* DATE LABELS */}
-<div
-  className="
-    absolute
-    left-0
-    right-0
-    top-[210px]
-  "
->
-  {visibleDateIndexes.map((index) => {
-    const item = chartData[index];
-
-    const left = getDatePosition(
-      item.date,
-      startDate,
-      totalDays,
-    );
-
-    const isFirst =
-      index === visibleDateIndexes[0];
-
-    const isLast =
-      index ===
-      visibleDateIndexes[
-        visibleDateIndexes.length - 1
-      ];
-
-    // Add space between first close labels
-    const isSecond =
-      index === visibleDateIndexes[1];
-
-    return (
-      <div
-        key={item.date}
+  {/* RIGHT LEGEND */}
+  {isLegendOnRight && (
+    <div
+      className="
+        relative
+        ml-4
+        flex
+        h-[275px]
+        w-[190px]
+        shrink-0
+        flex-col
+        border-l
+        border-[var(--color-border)]
+        pl-4
+        pt-1
+      "
+    >
+      {/* LEGEND TITLE */}
+      <span
         className="
-          absolute
-          whitespace-nowrap
+          mb-3
           text-[11px]
+          font-medium
+          tracking-wider
           text-[var(--color-text-muted)]
         "
-        style={{
-          left: `${left}%`,
-
-          transform: isFirst
-            ? "translateX(0)"
-            : isLast
-              ? "translateX(-100%)"
-              : isSecond
-                ? "translateX(-30%)"
-                : "translateX(-50%)",
-        }}
       >
-        {shortDate(item.date)}
-      </div>
-    );
-  })}
-</div>
-</div>
+        LEGEND
+      </span>
 
-      {/* LEGEND */}
+      {/* LEGEND ITEMS */}
       <div
         className="
-          mt-2
           flex
-          items-center
-          gap-6
-          border-t
-          border-[var(--color-border)]
-          pt-4
+          flex-col
+          gap-4
         "
       >
         <LegendItem
@@ -375,14 +419,95 @@ export function UsageTypeChart() {
             "openrouterSpend",
           )}
           onClick={() =>
-            toggleSeries("openrouterSpend")
+            toggleSeries(
+              "openrouterSpend",
+            )
           }
         />
       </div>
-    </div>
-  );
-}
 
+      {/* MOVE LEGEND TO BOTTOM */}
+      <button
+        type="button"
+        onClick={() =>
+          setIsLegendOnRight(false)
+        }
+        className="
+          absolute
+          top-0
+          right-0
+          flex
+          items-center
+          justify-center
+          cursor-pointer
+          text-[var(--color-text-muted)]
+        "
+        aria-label="Move legend to bottom"
+      >
+        <PanelBottom size={16} />
+      </button>
+    </div>
+  )}
+</div>
+
+{/* BOTTOM LEGEND */}
+{!isLegendOnRight && (
+  <div
+    className="
+      mt-2
+      flex
+      items-center
+      gap-6
+      border-t
+      border-[var(--color-border)]
+      pt-4
+    "
+  >
+    <LegendItem
+      color="#F2B233"
+      label="BYOK"
+      isActive={isActive("byok")}
+      onClick={() =>
+        toggleSeries("byok")
+      }
+    />
+
+    <LegendItem
+      color="#8B6BD9"
+      label="OpenRouter Spend"
+      isActive={isActive(
+        "openrouterSpend",
+      )}
+      onClick={() =>
+        toggleSeries(
+          "openrouterSpend",
+        )
+      }
+    />
+
+    {/* MOVE LEGEND TO RIGHT */}
+    <button
+      type="button"
+      onClick={() =>
+        setIsLegendOnRight(true)
+      }
+      className="
+        ml-auto
+        flex
+        items-center
+        justify-center
+        cursor-pointer
+        text-[var(--color-text-muted)]
+      "
+      aria-label="Move legend to right"
+    >
+      <PanelRight size={16} />
+    </button>
+  </div>
+)}
+</div>
+);
+}
 function LegendItem({
   color,
   label,

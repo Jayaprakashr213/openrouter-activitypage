@@ -1,4 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { PanelRight,PanelBottom } from "lucide-react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 type ChartData = {
   date: string;
@@ -6,38 +16,67 @@ type ChartData = {
   nemotron9b: number;
   nemotron3: number;
 };
-// function getLinePath(
-//   data: ChartData[],
-//   key: "gpt" | "nemotron9b" | "nemotron3",
-// ) {
-//     const MAX_VALUE = 1200;
-//   return data
-//     .map((item, index) => {
-//       const x =
-//         (index / (data.length - 1)) * 100;
+function CustomChartCursor(props: any) {
+  const { x, y, width, height } = props;
 
-//       const value = item[key];
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill="var(--color-chart-hover-surface)"
+      pointerEvents="none"
+    />
+  );
+}
+function UsageByModelTooltip({
+  active,
+  label,
+}: any) {
+  if (!active || !label) {
+    return null;
+  }
 
-//       const y =
-//         100 - (value / MAX_VALUE) * 100;
+  return (
+    <div
+      className="
+        pointer-events-none
+        -translate-x-1/2
+      "
+    >
+      <div
+        className="
+          inline-block
+          whitespace-nowrap
+          rounded-md
+          bg-[var(--color-tooltip-background)]
+          px-2
+          py-1
+          text-[length:var(--font-size-xs)]
+          font-medium
+          text-[var(--color-tooltip-text)]
+          shadow-[var(--shadow-md)]
+        "
+      >
+        {label}
+      </div>
 
-//       return `${index === 0 ? "M" : "L"} ${x} ${y}`;
-//     })
-//     .join(" ");
-// }
-const getDatePosition = (
-  date: string,
-  startDate: Date,
-  totalDays: number,
-) => {
-  const currentDate = new Date(date).getTime();
-  const start = startDate.getTime();
-
-  const daysFromStart =
-    (currentDate - start) / (1000 * 60 * 60 * 24)+2;
-
-  return (daysFromStart / totalDays) * 100;
-};
+      <div
+        className="
+          mt-2
+          h-[10px]
+          w-[220px]
+          rounded-full
+          border
+          border-[var(--color-border)]
+          bg-[var(--color-surface)]
+          shadow-[var(--shadow-sm)]
+        "
+      />
+    </div>
+  );
+}
 const chartData: ChartData[] = [
   { date: "25 Jul 2026", gpt: 0, nemotron9b: 0, nemotron3: 0 },
   { date: "26 Jul 2026", gpt: 0, nemotron9b: 0, nemotron3: 0 },
@@ -68,267 +107,382 @@ const shortDate = (date: string) => {
   return date.replace(" 2026", "");
 };
 
-export function UsageByModelChart() {
-  const [hoveredIndex, setHoveredIndex] =
-    useState<number | null>(null);
+type UsageByModelChartProps = {
+  isLegendRight?: boolean;
+};
 
-  // Convert all chart dates to Date objects
-  const dates = chartData.map(
-    (item) => new Date(item.date),
-  );
+export function UsageByModelChart({
+ 
+}: UsageByModelChartProps) {
+  const [activeModel, setActiveModel] = useState<
+    "all" | "gpt" | "nemotron3" | "nemotron9b"
+  >("all");
+const [isLegendRight, setIsLegendRight] = useState(false);
+const [activeTab, setActiveTab] = useState("Overview");
+  /*
+    When legend is on the right,
+    chart width is smaller → show fewer labels.
 
-  // First date: 25 Jul 2026
-  const startDate = dates[0];
+    When legend is below,
+    chart width is larger → show more labels.
+  */
 
-  // Last date: 23 Aug 2026
-  const endDate = dates[dates.length - 1];
+  const visibleLabels = useMemo(() => {
+    const step = isLegendRight ? 2 : 1;
 
-  // Total calendar days between first and last date
-const totalDays =
-  (endDate.getTime() - startDate.getTime()) /
-    (1000 * 60 * 60 * 24) +
-  2;
-const hoverLeft =
-  hoveredIndex !== null
-    ? getDatePosition(
-        chartData[hoveredIndex].date,
-        startDate,
-        totalDays,
+    return chartData
+      .filter(
+        (_, index) =>
+          index % step === 0 ||
+          index === chartData.length - 1,
       )
-    : 0;
-const [activeModel, setActiveModel] = useState<
-  "all" | "gpt" | "nemotron3" | "nemotron9b"
->("all");
-  return (
-  <div className="relative">
-    {/* CHART WRAPPER */}
-    <div className="relative h-[260px]">
-      {/* CHART AREA */}
+      .map((item) => item.date);
+  }, [isLegendRight]);
+
+  const visibleSeries = {
+    gpt:
+      activeModel === "all" ||
+      activeModel === "gpt",
+
+    nemotron3:
+      activeModel === "all" ||
+      activeModel === "nemotron3",
+
+    nemotron9b:
+      activeModel === "all" ||
+      activeModel === "nemotron9b",
+  };
+return (
+  <div
+    className={
+      isLegendRight
+        ? "flex h-[260px] w-full"
+        : "w-full"
+    }
+  >
+    {/* CHART SECTION */}
+    <div
+      className={
+        isLegendRight
+          ? "min-w-0 flex-1"
+          : "w-full"
+      }
+    >
       <div
-        className="
-          absolute
-          left-16
-          right-16
-          top-0
-          bottom-8
-          border
-          border-dashed
-          border-[var(--color-border)]
-          bg-[var(--color-surface)]
-          shadow-sm
-        "
+        className={
+          isLegendRight
+            ? "relative h-full"
+            : "relative h-[260px]"
+        }
       >
-        {/* ONLY VERTICAL DOTTED GRID LINES */}
-   <div className="absolute inset-0 pointer-events-none">
-  {chartData.map((item) => {
-    const left = getDatePosition(
-      item.date,
-      startDate,
-      totalDays,
-    );
+        {/* FOUR-SIDE DASHED BORDER */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            left-5
+            right-5
+            top-[14px]
+            bottom-[34px]
+            border
+            border-dashed
+            border-[var(--color-border)]
+          "
+        />
 
-    return (
-      <div
-        key={item.date}
-        className="
-          absolute
-          top-0
-          bottom-0
-          border-l
-          border-dashed
-          border-[var(--color-border)]
-          opacity-70
-        "
-        style={{
-          left: `${left}%`,
-        }}
-      />
-    );
-  })}
-
-  {/* FINAL CLOSING LINE AFTER 23 AUG */}
-  <div
-    className="
-      absolute
-      top-0
-      bottom-0
-      border-l
-      border-dashed
-      border-[var(--color-border)]
-      opacity-70
-    "
-    style={{
-      left: "100%",
-    }}
-  />
-</div>
-
-        {/* HOVER VERTICAL ROUNDED SURFACE */}
-      {/* HOVER DARK SURFACE */}
-{hoveredIndex !== null && (
-  <div
-    className="
-      pointer-events-none
-      absolute
-      top-0
-      bottom-0
-      z-20
-      w-[48px]
-      -translate-x-1/2
-      bg-black/2
-    "
-    style={{
-      left: `${hoverLeft}%`,
-    }}
-  />
-)}
-        {/* HOVER DATE + WHITE SURFACE */}
-        {hoveredIndex !== null && (
-          <div
-            className="
-              pointer-events-none
-              absolute
-              top-[38%]
-              z-30
-              -translate-x-1/2
-            "
-            style={{
-              left: `${hoverLeft}%`,
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{
+              top: 14,
+              right: 20,
+              left: 20,
+              bottom: 0,
             }}
           >
-            {/* DATE TOOLTIP */}
-            <div
-              className="
-                inline-block
-                whitespace-nowrap
-                rounded-md
-                bg-[var(--color-tooltip-background)]
-                px-2
-                py-1
-                text-[length:var(--font-size-xs)]
-                font-medium
-                text-[var(--color-tooltip-text)]
-                shadow-[var(--shadow-md)]
-              "
-            >
-              {chartData[hoveredIndex].date}
-            </div>
+            <CartesianGrid
+              stroke="var(--color-border)"
+              strokeDasharray="3 4"
+              horizontal={false}
+              vertical
+            />
 
-            {/* ROUNDED WHITE HOVER SURFACE */}
-            <div
-              className="
-                mt-2
-                h-[10px]
-                w-[220px]
-                rounded-full
-                border
-                border-[var(--color-border)]
-                bg-[var(--color-surface)]
-                shadow-[var(--shadow-sm)]
-              "
+            <XAxis
+              dataKey="date"
+              axisLine={false}
+              tickLine={false}
+              height={34}
+              interval={0}
+              ticks={visibleLabels}
+              tick={{
+                fontSize: 12,
+                fill: "var(--color-text-secondary)",
+              }}
+              tickFormatter={shortDate}
+              minTickGap={0}
+              padding={{
+                left: 8,
+                right: 8,
+              }}
+            />
+
+            <YAxis
+              hide
+              domain={[0, "auto"]}
+            />
+
+<Tooltip
+  cursor={{
+    fill: "rgba(100, 116, 139, 0.12)",
+  }}
+  content={<UsageByModelTooltip />}
+/>
+
+           {/* GPT */}
+{visibleSeries.gpt && (
+  <Line
+    type="monotone"
+    dataKey="gpt"
+    stroke="transparent"
+    strokeWidth={0}
+    connectNulls={false}
+  dot={false}
+    // activeDot={{
+    // false
+    // }}
+  />
+)}
+
+{/* NEMOTRON 3 */}
+{visibleSeries.nemotron3 && (
+  <Line
+    type="monotone"
+    dataKey="nemotron3"
+    stroke="transparent"
+    strokeWidth={0}
+    connectNulls={false}
+   dot={false}
+ 
+  />
+)}
+
+{/* NEMOTRON 9B */}
+{visibleSeries.nemotron9b && (
+  <Line
+    type="monotone"
+    dataKey="nemotron9b"
+    stroke="transparent"
+    strokeWidth={0}
+    connectNulls={false}
+  dot={false}
+    // activeDot={{
+    //   r: 4,
+    //   fill: "var(--color-chart-nemotron-9b)",
+    //   stroke: "var(--color-surface)",
+    //   strokeWidth: 2,
+    // }}
+  />
+)}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* BOTTOM LEGEND */}
+      {!isLegendRight && (
+        <div
+          className="
+            mt-4
+            flex
+            items-center
+            justify-between
+            border-t
+            border-[var(--color-border)]
+            pt-4
+          "
+        >
+          {/* LEGEND ITEMS */}
+          <div className="flex items-center gap-6">
+            <LegendItem
+              color="var(--color-chart-gpt)"
+              label="gpt-oss-20b"
+              isActive={
+                activeModel === "all" ||
+                activeModel === "gpt"
+              }
+              onClick={() =>
+                setActiveModel((current) =>
+                  current === "gpt"
+                    ? "all"
+                    : "gpt",
+                )
+              }
+            />
+
+            <LegendItem
+              color="var(--color-chart-nemotron-9b)"
+              label="Nemotron Nano 9B V2"
+              isActive={
+                activeModel === "all" ||
+                activeModel === "nemotron9b"
+              }
+              onClick={() =>
+                setActiveModel((current) =>
+                  current === "nemotron9b"
+                    ? "all"
+                    : "nemotron9b",
+                )
+              }
+            />
+
+            <LegendItem
+              color="var(--color-chart-nemotron-3)"
+              label="Nemotron 3 Nano Omni"
+              isActive={
+                activeModel === "all" ||
+                activeModel === "nemotron3"
+              }
+              onClick={() =>
+                setActiveModel((current) =>
+                  current === "nemotron3"
+                    ? "all"
+                    : "nemotron3",
+                )
+              }
             />
           </div>
-        )}
 
-        {/* HOVER DETECTION */}
-        <div className="absolute inset-0 z-40 flex">
-          {chartData.map((item, index) => (
-            <div
-              key={item.date}
-              className="
-                h-full
-                flex-1
-                cursor-crosshair
-              "
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* X AXIS */}
-      <div
-        className="
-          absolute
-          bottom-0
-          left-16
-          right-16
-          flex
-          justify-between
-          text-[length:var(--font-size-xs)]
-          text-[var(--color-text-secondary)]
-        "
-      >
-        {chartData.map((item) => (
-          <span
-            key={item.date}
-            className="whitespace-nowrap"
+          {/* RIGHT SIDE ICON */}
+          <button
+            type="button"
+            onClick={() =>
+              setIsLegendRight((prev) => !prev)
+            }
+            className="
+              flex
+              h-8
+              w-8
+              shrink-0
+              items-center
+              justify-center
+              cursor-pointer
+              text-[var(--color-text-secondary)]
+              hover:text-[var(--color-text)]
+              transition-colors
+            "
+            aria-label="Move legend to right"
           >
-            {shortDate(item.date)}
-          </span>
-        ))}
-      </div>
+            <PanelRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
 
-    {/* LEGEND */}
-  {/* LEGEND */}
-<div
-  className="
-    mt-4
-    flex
-    items-center
-    gap-6
-    border-t
-    border-[var(--color-border)]
-    pt-4
-  "
->
-  <LegendItem
-    color="var(--color-chart-gpt)"
-    label="gpt-oss-20b"
-    isActive={activeModel === "all" || activeModel === "gpt"}
-    onClick={() =>
-      setActiveModel((current) =>
-        current === "gpt" ? "all" : "gpt",
-      )
-    }
-  />
+    {/* RIGHT LEGEND */}
+    {isLegendRight && (
+      <div
+        className="
+          ml-4
+          w-[190px]
+          shrink-0
+          pl-4
+          pt-1
+        "
+      >
+        {/* HEADER */}
+        <div className="mb-4 flex items-center justify-between">
+          <p
+            className="
+              text-xs
+              uppercase
+              tracking-wide
+              text-[var(--color-text-secondary)]
+            "
+          >
+            Legend
+          </p>
 
-  <LegendItem
-    color="var(--color-chart-nemotron-3)"
-    label="Nemotron 3 Nano Omni"
-    isActive={
-      activeModel === "all" || activeModel === "nemotron3"
-    }
-    onClick={() =>
-      setActiveModel((current) =>
-        current === "nemotron3"
-          ? "all"
-          : "nemotron3",
-      )
-    }
-  />
+          {/* MOVE LEGEND BACK TO BOTTOM */}
+          <button
+            type="button"
+            onClick={() =>
+              setIsLegendRight(false)
+            }
+            className="
+              flex
+              h-8
+              w-8
+              shrink-0
+              items-center
+              justify-center
+              cursor-pointer
+              text-[var(--color-text-secondary)]
+              hover:text-[var(--color-text)]
+              transition-colors
+            "
+            aria-label="Move legend to bottom"
+          >
+            <PanelBottom
+              size={16}
+              strokeWidth={1.5}
+            />
+          </button>
+        </div>
 
-  <LegendItem
-    color="var(--color-chart-nemotron-9b)"
-    label="Nemotron Nano 9B V2"
-    isActive={
-      activeModel === "all" || activeModel === "nemotron9b"
-    }
-    onClick={() =>
-      setActiveModel((current) =>
-        current === "nemotron9b"
-          ? "all"
-          : "nemotron9b",
-      )
-    }
-  />
-</div>
+        {/* LEGEND ITEMS */}
+        <div className="flex flex-col gap-4">
+          <LegendItem
+            color="var(--color-chart-gpt)"
+            label="gpt-oss-20b"
+            isActive={
+              activeModel === "all" ||
+              activeModel === "gpt"
+            }
+            onClick={() =>
+              setActiveModel((current) =>
+                current === "gpt"
+                  ? "all"
+                  : "gpt",
+              )
+            }
+          />
+
+          <LegendItem
+            color="var(--color-chart-nemotron-9b)"
+            label="Nemotron Nano 9B V2"
+            isActive={
+              activeModel === "all" ||
+              activeModel === "nemotron9b"
+            }
+            onClick={() =>
+              setActiveModel((current) =>
+                current === "nemotron9b"
+                  ? "all"
+                  : "nemotron9b",
+              )
+            }
+          />
+
+          <LegendItem
+            color="var(--color-chart-nemotron-3)"
+            label="Nemotron 3 Nano Omni"
+            isActive={
+              activeModel === "all" ||
+              activeModel === "nemotron3"
+            }
+            onClick={() =>
+              setActiveModel((current) =>
+                current === "nemotron3"
+                  ? "all"
+                  : "nemotron3",
+              )
+            }
+          />
+        </div>
+      </div>
+    )}
   </div>
 );
 }
-
 function LegendItem({
   color,
   label,
@@ -349,17 +503,18 @@ function LegendItem({
         items-center
         gap-2
         text-[length:var(--font-size-sm)]
-        transition-all
+        transition-opacity
         duration-200
         cursor-pointer
       "
+      style={{
+        opacity: isActive ? 1 : 0.35,
+      }}
     >
       <span
-        className="h-2 w-2 rounded-full shrink-0"
+        className="h-2.5 w-2.5 shrink-0 rounded-full"
         style={{
-          backgroundColor: isActive
-            ? color
-            : "var(--color-text-muted)",
+          backgroundColor: color,
         }}
       />
 
@@ -367,7 +522,7 @@ function LegendItem({
         className={
           isActive
             ? "text-[var(--color-text)]"
-            : "text-[var(--color-text-muted)] line-through opacity-50"
+            : "text-[var(--color-text-muted)]"
         }
       >
         {label}

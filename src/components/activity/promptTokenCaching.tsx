@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LegendItem } from "../../utils/filterOptions";
-
+import { PanelBottom,PanelRight } from "lucide-react";
 const chartData = [
   {
     date: "26 July 2026",
@@ -97,19 +97,6 @@ const models = [
 
 const MAX_VALUE = 1000;
 
-const visibleDateIndexes = [
-  0,
-  1,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  12,
-];
 
 const yAxisValues = [1000, 750, 500, 250, 0];
 
@@ -124,16 +111,29 @@ export  function PromptTokenCaching() {
 
   const [isLegendOnRight, setIsLegendOnRight] =
     useState(false);
+    const visibleDateIndexes = isLegendOnRight
+  ? [0, 3, 5, 7, 9, 10, 12] // fewer labels when legend is on right
+  : [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 12];
 
-  const getPosition = (index: number) => {
-    if (chartData.length <= 1) {
-      return 0;
-    }
+ const getPosition = (index: number) => {
+  const currentDate = new Date(
+    chartData[index].date,
+  ).getTime();
 
-    return (
-      (index / (chartData.length - 1)) * 100
-    );
-  };
+  const startDate = new Date(
+    chartData[0].date,
+  ).getTime();
+
+  const endDate = new Date(
+    chartData[chartData.length - 1].date,
+  ).getTime();
+
+  return (
+    ((currentDate - startDate) /
+      (endDate - startDate)) *
+    100
+  );
+};
 
   const handleLegendClick = (key: string) => {
     setActiveSeries((prev) => {
@@ -631,16 +631,17 @@ export  function PromptTokenCaching() {
                   const item =
                     chartData[index];
 
-                  const isFirst =
-                    index ===
-                    visibleDateIndexes[0];
+                const isFirst =
+  index === visibleDateIndexes[0];
 
-                  const isLast =
-                    index ===
-                    visibleDateIndexes[
-                      visibleDateIndexes.length -
-                        1
-                    ];
+const isSecond =
+  index === visibleDateIndexes[1];
+
+const isLast =
+  index ===
+  visibleDateIndexes[
+    visibleDateIndexes.length - 1
+  ];
 
                   return (
                     <span
@@ -651,17 +652,17 @@ export  function PromptTokenCaching() {
                         text-[11px]
                         text-[var(--color-text-muted)]
                       "
-                      style={{
-                        left: `${getPosition(
-                          index,
-                        )}%`,
+                     style={{
+  left: `${getPosition(index)}%`,
 
-                        transform: isFirst
-                          ? "translateX(0)"
-                          : isLast
-                            ? "translateX(-100%)"
-                            : "translateX(-50%)",
-                      }}
+  transform: isFirst
+    ? "translateX(0)"
+    : isSecond
+      ? "translateX(12px)"
+      : isLast
+        ? "translateX(-100%)"
+        : "translateX(-50%)",
+}}
                     >
                       {item.displayDate}
                     </span>
@@ -673,65 +674,72 @@ export  function PromptTokenCaching() {
         </div>
 
         {/* ================= RIGHT LEGEND ================= */}
-        {isLegendOnRight && (
-          <div
-            className="
-              ml-4
-              flex
-              w-[200px]
-              shrink-0
-              flex-col
-              border-l
-              border-[var(--color-border)]
-              pl-4
-              pt-1
-            "
-          >
-            <span
-              className="
-                mb-3
-                text-[11px]
-                font-medium
-                tracking-wider
-                text-[var(--color-text-muted)]
-              "
-            >
-              LEGEND
-            </span>
+       {isLegendOnRight && (
+  <div
+    className="
+      relative
+      ml-4
+      flex
+      min-h-full
+      w-[200px]
+      shrink-0
+      flex-col
+      border-l
+      border-[var(--color-border)]
+      pl-4
+      pt-1
+    "
+  >
+    {/* LEGEND TITLE */}
+    <span
+      className="
+        mb-3
+        text-[11px]
+        font-medium
+        tracking-wider
+        text-[var(--color-text-muted)]
+      "
+    >
+      LEGEND
+    </span>
 
-            <div className="flex flex-col gap-3">
-              {models.map((model) => (
-                <LegendItem
-                  key={model.key}
-                  color={model.color}
-                  label={model.label}
-                  isActive={activeSeries.includes(
-                    model.key,
-                  )}
-                  onClick={() =>
-                    handleLegendClick(model.key)
-                  }
-                />
-              ))}
-            </div>
+    {/* LEGEND ITEMS */}
+    <div className="flex flex-col gap-3">
+      {models.map((model) => (
+        <LegendItem
+          key={model.key}
+          color={model.color}
+          label={model.label}
+          isActive={activeSeries.includes(model.key)}
+          onClick={() =>
+            handleLegendClick(model.key)
+          }
+        />
+      ))}
+    </div>
 
-            <button
-              type="button"
-              onClick={() =>
-                setIsLegendOnRight(false)
-              }
-              className="
-                mt-auto
-                self-end
-                cursor-pointer
-                text-[length:var(--font-size-lg)]
-                text-[var(--color-text-muted)]
-              "
-            >
-              ˅
-            </button>
-          </div>
-        )}
+    {/* MOVE LEGEND TO BOTTOM */}
+    <button
+      type="button"
+      onClick={() => setIsLegendOnRight(false)}
+      className="
+        absolute
+        top-0
+        right-0
+        flex
+        h-6
+        w-6
+        items-center
+        justify-center
+        cursor-pointer
+        text-[var(--color-text-muted)]
+      "
+      aria-label="Move legend to bottom"
+    >
+      <PanelBottom size={16} />
+    </button>
+  </div>
+)}
       </div>
 
       {/* ================= BOTTOM LEGEND ================= */}
@@ -761,20 +769,21 @@ export  function PromptTokenCaching() {
             />
           ))}
 
-          <button
-            type="button"
-            onClick={() =>
-              setIsLegendOnRight(true)
-            }
-            className="
-              ml-auto
-              cursor-pointer
-              text-[length:var(--font-size-lg)]
-              text-[var(--color-text-muted)]
-            "
-          >
-            ◧
-          </button>
+        <button
+  type="button"
+  onClick={() => setIsLegendOnRight(true)}
+  className="
+    ml-auto
+    flex
+    items-center
+    justify-center
+    cursor-pointer
+    text-[var(--color-text-muted)]
+  "
+  aria-label="Move legend to right"
+>
+  <PanelRight size={16} />
+</button>
         </div>
       )}
     </div>

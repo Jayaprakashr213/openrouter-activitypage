@@ -47,6 +47,15 @@
   /* SHADOWS */
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.16);
+  --color-chart-api-key: #f5a623;
+--color-chart-app: #e65b9f;
+--color-chart-other: #9ca3af;
+/* CHART LAYOUT */
+--chart-card-radius: 12px;
+--chart-card-padding: 16px;
+--chart-grid-color: #e5e7eb;
+--chart-axis-color: #6b7280;
+--chart-control-height: 36px;
 }
 
 * {

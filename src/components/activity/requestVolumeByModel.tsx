@@ -1,5 +1,6 @@
 import {  useState } from "react";
 import { LegendItem } from "../../utils/filterOptions";
+import { PanelBottom,PanelRight } from "lucide-react";
 type ModelKey =
   | "gptOss20b"
   | "nemotron3NanoOmni"
@@ -258,6 +259,8 @@ const visibleDateIndexes = isLegendOnRight
       "nemotron3NanoOmni",
       "nemotronNano9BV2",
     ]);
+
+    const [activeTab, setActiveTab] = useState("overview");
 const handleLegendClick = (key: ModelKey) => {
   setActiveSeries((prev) => {
     const onlySelected =
@@ -323,7 +326,7 @@ return (
     "
   >
     {/* ================= HEADER ================= */}
-    <div className="mb-3 flex items-center">
+    <div className="mb-5 flex items-center">
       <h2
           className="
             text-[length:var(--font-size-lg)]
@@ -334,19 +337,20 @@ return (
           Request volume by model
         </h2>
 
-      <button
-        type="button"
-        className="
-          ml-auto
-          flex
-          items-center
-          gap-1
-          text-[length:var(--font-size-sm)]
-          text-[var(--color-text)]
-        "
-      >
-        Explore ›
-      </button>
+ <button
+  type="button"
+  onClick={() => setActiveTab("Explore")}
+  className="
+    ml-auto
+    cursor-pointer
+    text-[length:var(--font-size-sm)]
+    text-[var(--color-text)]
+    underline
+    underline-offset-4
+  "
+>
+  Explore ›
+</button>
     </div>
 
     {/* ================= CHART + LEGEND ================= */}
@@ -370,31 +374,37 @@ return (
         onMouseLeave={() => setHoveredIndex(null)}
       >
         {/* Y AXIS LABELS */}
-        <div
-          className="
-            absolute
-            left-0
-            top-0
-            h-[220px]
-            w-7
-            text-[length:var(--font-size-sm)]
-            text-[var(--color-text-muted)]
-          "
-        >
-          {[3, 2, 1, 0].map((value) => (
-            <div
-              key={value}
-              className="absolute -translate-y-1/2"
-              style={{
-                top: `${
-                  ((MAX_VALUE - value) / MAX_VALUE) * 100
-                }%`,
-              }}
-            >
-              {value}
-            </div>
-          ))}
-        </div>
+<div
+  className="
+    absolute
+    left-2
+    top-[4px]
+    h-[212px]
+    w-8
+    text-[length:var(--font-size-sm)]
+    text-[var(--color-text-muted)]
+  "
+>
+  {[3, 2, 1, 0].map((value) => (
+    <div
+      key={value}
+      className="absolute -translate-y-1/2"
+      style={{
+        top: `${((MAX_VALUE - value) / MAX_VALUE) * 100}%`,
+
+        // Prevent top and bottom labels from crossing chart
+        transform:
+          value === MAX_VALUE
+            ? "translateY(0)"
+            : value === 0
+              ? "translateY(-100%)"
+              : "translateY(-50%)",
+      }}
+    >
+      {value}
+    </div>
+  ))}
+</div>
 
         {/* ==================== CHART AREA ==================== */}
         <div
@@ -768,19 +778,35 @@ return (
       }
     >
       {/* RIGHT LEGEND HEADING */}
-      {isLegendOnRight && (
-        <div
-          className="
-            mb-4
-            text-[12px]
-            uppercase
-            tracking-wider
-            text-[var(--color-text-muted)]
-          "
-        >
-          Legend
-        </div>
-      )}
+     {isLegendOnRight && (
+  <div className="relative mb-4 flex items-center justify-between">
+    <div
+      className="
+        text-[12px]
+        uppercase
+        tracking-wider
+        text-[var(--color-text-muted)]
+      "
+    >
+      Legend
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setIsLegendOnRight(false)}
+      className="
+        flex
+        items-center
+        justify-center
+        cursor-pointer
+        text-[var(--color-text-muted)]
+      "
+      aria-label="Move legend to bottom"
+    >
+      <PanelBottom size={16} />
+    </button>
+  </div>
+)}
 
       {/* LEGEND ITEMS */}
       <div
@@ -805,23 +831,23 @@ return (
         ))}
       </div>
 
-      {/* TOGGLE BUTTON */}
-      <button
-        type="button"
-        onClick={() =>
-          setIsLegendOnRight(
-            (prev) => !prev,
-          )
-        }
-        className="
-          ml-auto
-          text-[length:var(--font-size-lg)]
-          text-[var(--color-text-muted)]
-          cursor-pointer
-        "
-      >
-        {isLegendOnRight ? "⌄" : "◧"}
-      </button>
+ {!isLegendOnRight && (
+  <button
+    type="button"
+    onClick={() => setIsLegendOnRight(true)}
+    className="
+      ml-auto
+      flex
+      items-center
+      justify-center
+      cursor-pointer
+      text-[var(--color-text-muted)]
+    "
+    aria-label="Move legend to right"
+  >
+    <PanelRight size={16} />
+  </button>
+)}
     </div>
     </div>
   </div>

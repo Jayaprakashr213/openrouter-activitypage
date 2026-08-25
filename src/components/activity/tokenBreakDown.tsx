@@ -2,17 +2,16 @@
 
 import { useState } from "react";
 import { LegendItem } from "../../utils/filterOptions";
-
-const MAX_VALUE = 3000;
+import { PanelRight, PanelBottom } from "lucide-react";
+const MAX_VALUE = 4000;
 
 const Y_AXIS_VALUES = [
+  4000,
   3000,
   2000,
   1000,
-  650,
   0,
 ];
-
 const chartData = [
   {
     date: "27 Jul 2026",
@@ -162,16 +161,17 @@ export function TokenBreakdown() {
   /*
    * Format Y axis values
    */
-  const formatYAxisValue = (
-    value: number,
-  ) => {
-    if (value >= 1000) {
-      return `${value / 1000}K`;
-    }
-
-    return value.toString();
+const formatYAxisValue = (value: number) => {
+  const labelMap: Record<number, string> = {
+    4000: "3K",
+    3000: "2K",
+    2000: "1K",
+    1000: "650",
+    0: "0",
   };
 
+  return labelMap[value] ?? "";
+};
   /*
    * Full bar height.
    * Always calculate using ALL token values
@@ -273,24 +273,23 @@ export function TokenBreakdown() {
                 text-[var(--color-text-muted)]
               "
             >
-              {Y_AXIS_VALUES.map((value) => (
-                <div
-                  key={value}
-                  className="
-                    absolute
-                    -translate-y-1/2
-                  "
-                  style={{
-                    top: `${
-                      ((MAX_VALUE - value) /
-                        MAX_VALUE) *
-                      100
-                    }%`,
-                  }}
-                >
-                  {formatYAxisValue(value)}
-                </div>
-              ))}
+      {Y_AXIS_VALUES.map((value) => {
+  const isTopValue = value === MAX_VALUE;
+
+  return (
+    <div
+      key={value}
+      className="absolute -translate-y-1/2"
+      style={{
+        top: isTopValue
+          ? "4%"
+          : `${((MAX_VALUE - value) / MAX_VALUE) * 100}%`,
+      }}
+    >
+      {formatYAxisValue(value)}
+    </div>
+  );
+})}
             </div>
 
             {/* ================= CHART AREA ================= */}
@@ -757,75 +756,62 @@ export function TokenBreakdown() {
 
         {/* ================= RIGHT LEGEND ================= */}
 
-        {isLegendOnRight && (
-          <div
-            className="
-              ml-4
-              w-[190px]
-              shrink-0
-              border-l
-              border-[var(--color-border)]
-              pl-4
-            "
-          >
-            <div
-              className="
-                mb-4
-                text-[11px]
-                uppercase
-                tracking-wider
-                text-[var(--color-text-muted)]
-              "
-            >
-              Legend
-            </div>
+      {isLegendOnRight && (
+  <div
+    className="
+      relative
+      ml-4
+      w-[190px]
+      shrink-0
+      border-l
+      border-[var(--color-border)]
+      pl-4
+    "
+  >
+    <div
+      className="
+        mb-4
+        text-[11px]
+        uppercase
+        tracking-wider
+        text-[var(--color-text-muted)]
+      "
+    >
+      Legend
+    </div>
 
-            <div
-              className="
-                flex
-                flex-col
-                gap-4
-              "
-            >
-              {models.map(
-                (model) => (
-                  <LegendItem
-                    key={model.key}
-                    color={model.color}
-                    label={model.label}
-                    isActive={activeSeries.includes(
-                      model.key,
-                    )}
-                    onClick={() =>
-                      handleLegendClick(
-                        model.key,
-                      )
-                    }
-                  />
-                ),
-              )}
-            </div>
+    <div className="flex flex-col gap-4">
+      {models.map((model) => (
+        <LegendItem
+          key={model.key}
+          color={model.color}
+          label={model.label}
+          isActive={activeSeries.includes(model.key)}
+          onClick={() => handleLegendClick(model.key)}
+        />
+      ))}
+    </div>
 
-            {/* TOGGLE */}
-
-            <button
-              type="button"
-              onClick={() =>
-                setIsLegendOnRight(false)
-              }
-              className="
-                mt-4
-                ml-auto
-                block
-                cursor-pointer
-                text-[length:var(--font-size-lg)]
-                text-[var(--color-text-muted)]
-              "
-            >
-              ⌄
-            </button>
-          </div>
-        )}
+    {/* Panel Bottom - bottom right */}
+    <button
+      type="button"
+      onClick={() => setIsLegendOnRight(false)}
+      className="
+        absolute
+        top-0
+        right-0
+        flex
+        items-center
+        justify-center
+        cursor-pointer
+        text-[var(--color-text-muted)]
+      "
+      aria-label="Move legend to bottom"
+    >
+      <PanelBottom size={16} />
+    </button>
+  </div>
+)}
       </div>
 
       {/* ================= BOTTOM LEGEND ================= */}
@@ -857,20 +843,21 @@ export function TokenBreakdown() {
             />
           ))}
 
-          <button
-            type="button"
-            onClick={() =>
-              setIsLegendOnRight(true)
-            }
-            className="
-              ml-auto
-              cursor-pointer
-              text-[length:var(--font-size-lg)]
-              text-[var(--color-text-muted)]
-            "
-          >
-            ◧
-          </button>
+        <button
+  type="button"
+  onClick={() => setIsLegendOnRight(true)}
+  className="
+    ml-auto
+    flex
+    items-center
+    justify-center
+    cursor-pointer
+    text-[var(--color-text-muted)]
+  "
+  aria-label="Move legend to right"
+>
+  <PanelRight size={16} />
+</button>
         </div>
       )}
     </div>

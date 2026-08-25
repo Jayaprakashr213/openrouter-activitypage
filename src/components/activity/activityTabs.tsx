@@ -22,6 +22,7 @@ export function ActivityTabs({
               onClick={() => onTabChange(tab)}
               className={`
                 relative
+                cursor-pointer
                 px-4
                 py-3
                 text-[length:var(--font-size-base)]
