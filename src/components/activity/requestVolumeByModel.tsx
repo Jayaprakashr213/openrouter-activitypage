@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import {  useState } from "react";
 import { LegendItem } from "../../utils/filterOptions";
 type ModelKey =
   | "gptOss20b"
@@ -293,10 +293,10 @@ const handleLegendClick = (key: ModelKey) => {
     );
   };
 
-  const hoveredData =
-    hoveredIndex !== null
-      ? chartData[hoveredIndex]
-      : null;
+  // const hoveredData =
+  //   hoveredIndex !== null
+  //     ? chartData[hoveredIndex]
+  //     : null;
 
   // const total = useMemo(() => {
   //   if (!hoveredData) return 0;
