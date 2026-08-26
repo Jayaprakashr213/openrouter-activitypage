@@ -2,16 +2,55 @@
 
 :root {
   --font-family: Inter, system-ui, sans-serif;
-  --top-nav-height: 4rem;
 
-  /* FONT SIZES */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
+  /* LAYOUT */
+  --top-nav-height: 4rem;
+  --sidebar-width: 16.25rem;
+  --content-padding: 1.5rem;
+  --content-gap: 1.5rem;
+
+  /* RESPONSIVE */
+  --responsive-font-scale: 1;
+  --mobile-content-padding: 1rem;
+  --mobile-content-gap: 1rem;
+
+  /* =========================================
+     DEFAULT FONT SIZE VARIABLES
+     Fallback values before ThemeProvider runs
+  ========================================= */
+
+  /* DESKTOP */
+  --font-size-xs-desktop: 0.75rem;
+  --font-size-sm-desktop: 0.875rem;
+  --font-size-base-desktop: 1rem;
+  --font-size-lg-desktop: 1.125rem;
+  --font-size-xl-desktop: 1.25rem;
+  --font-size-2xl-desktop: 1.5rem;
+  --font-size-3xl-desktop: 1.875rem;
+
+  /* MOBILE */
+  --font-size-xs-mobile: 0.6875rem;
+  --font-size-sm-mobile: 0.75rem;
+  --font-size-base-mobile: 0.875rem;
+  --font-size-lg-mobile: 1rem;
+  --font-size-xl-mobile: 1.125rem;
+  --font-size-2xl-mobile: 1.375rem;
+  --font-size-3xl-mobile: 1.75rem;
+
+  /* =========================================
+     ACTIVE FONT SIZES - DESKTOP
+  ========================================= */
+
+  --font-size-xs: var(--font-size-xs-desktop);
+  --font-size-sm: var(--font-size-sm-desktop);
+  --font-size-base: var(--font-size-base-desktop);
+  --font-size-lg: var(--font-size-lg-desktop);
+  --font-size-xl: var(--font-size-xl-desktop);
+  --font-size-2xl: var(--font-size-2xl-desktop);
+  --font-size-3xl: var(--font-size-3xl-desktop);
+
+  /* CHART TYPOGRAPHY */
+  --font-size-chart-legend: var(--font-size-sm);
 
   /* BRAND COLORS */
   --color-primary: #6d28d9;
@@ -36,6 +75,9 @@
   --color-chart-gpt: #24a699;
   --color-chart-nemotron-9b: #8cad27;
   --color-chart-nemotron-3: #2b7fc7;
+  --color-chart-api-key: #f5a623;
+  --color-chart-app: #e65b9f;
+  --color-chart-other: #9ca3af;
 
   /* CHART HOVER */
   --color-chart-hover-surface: rgba(17, 17, 17, 0.04);
@@ -47,15 +89,13 @@
   /* SHADOWS */
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.16);
-  --color-chart-api-key: #f5a623;
---color-chart-app: #e65b9f;
---color-chart-other: #9ca3af;
-/* CHART LAYOUT */
---chart-card-radius: 12px;
---chart-card-padding: 16px;
---chart-grid-color: #e5e7eb;
---chart-axis-color: #6b7280;
---chart-control-height: 36px;
+
+  /* CHART LAYOUT */
+  --chart-card-radius: 12px;
+  --chart-card-padding: 16px;
+  --chart-grid-color: #e5e7eb;
+  --chart-axis-color: #6b7280;
+  --chart-control-height: 36px;
 }
 
 * {
@@ -75,4 +115,41 @@ body {
   color: var(--color-text);
   font-family: var(--font-family);
   font-size: var(--font-size-base);
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+  :root {
+    --content-padding: 1.25rem;
+    --content-gap: 1.25rem;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 767px) {
+  :root {
+    --top-nav-height: 3.5rem;
+
+    --sidebar-width: 16.25rem;
+
+    --content-padding: var(--mobile-content-padding);
+    --content-gap: var(--mobile-content-gap);
+
+    --responsive-font-scale: 0.9;
+
+    /* =========================================
+       ACTIVE FONT SIZES - MOBILE
+    ========================================= */
+
+    --font-size-xs: var(--font-size-xs-mobile);
+    --font-size-sm: var(--font-size-sm-mobile);
+    --font-size-base: var(--font-size-base-mobile);
+    --font-size-lg: var(--font-size-lg-mobile);
+    --font-size-xl: var(--font-size-xl-mobile);
+    --font-size-2xl: var(--font-size-2xl-mobile);
+    --font-size-3xl: var(--font-size-3xl-mobile);
+
+    /* MOBILE CHART TYPOGRAPHY */
+    --font-size-chart-legend: var(--font-size-xs);
+  }
 }

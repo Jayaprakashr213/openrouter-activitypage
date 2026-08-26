@@ -10,8 +10,8 @@ export function ActivityTabs({
   onTabChange,
 }: ActivityTabsProps) {
   return (
-    <div className="mt-5 border-b border-[var(--color-border)]">
-      <div className="flex items-center gap-1">
+    <div className="mt-5 w-full border-b border-[var(--color-border)]">
+      <div className="flex w-full items-center lg:w-auto lg:justify-start">
         {tabs.map((tab) => {
           const active = activeTab === tab;
 
@@ -22,11 +22,20 @@ export function ActivityTabs({
               onClick={() => onTabChange(tab)}
               className={`
                 relative
+                flex-1
                 cursor-pointer
-                px-4
+                px-2
                 py-3
+                text-center
                 text-[length:var(--font-size-base)]
+                whitespace-nowrap
                 transition-colors
+
+                sm:px-4
+
+                lg:flex-none
+                lg:px-5
+
                 ${
                   active
                     ? "text-[var(--color-primary)]"

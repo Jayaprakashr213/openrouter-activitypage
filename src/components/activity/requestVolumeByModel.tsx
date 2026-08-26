@@ -1,6 +1,11 @@
-import {  useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { LegendItem } from "../../utils/filterOptions";
-import { PanelBottom,PanelRight } from "lucide-react";
+import { PanelBottom,PanelRight, } from "lucide-react";
 type ModelKey =
   | "gptOss20b"
   | "nemotron3NanoOmni"
@@ -247,12 +252,38 @@ const models: {
 export function RequestVolumeByModel() {
   const [hoveredIndex, setHoveredIndex] =
     useState<number | null>(null);
-const [isLegendOnRight, setIsLegendOnRight] =
+const chartAreaRef = useRef<HTMLDivElement>(null);
+  const [isLegendOnRight, setIsLegendOnRight] =
+    useState(false);
+const [isNarrowLayout, setIsNarrowLayout] =
   useState(false);
-  
-const visibleDateIndexes = isLegendOnRight
-  ? [0, 4, 8, 12, 16, 20, 24, 28]
-  : [0, 2, 4, 7, 10, 13, 16, 19, 22, 25, 28];
+console.log(setIsNarrowLayout)
+const chartContainerRef =
+  useRef<HTMLDivElement | null>(null);
+
+const [chartWidth, setChartWidth] =
+  useState(0);
+
+useEffect(() => {
+  const element =
+    chartContainerRef.current;
+
+  if (!element) return;
+
+  const resizeObserver =
+    new ResizeObserver((entries) => {
+      const width =
+        entries[0]?.contentRect.width ?? 0;
+
+      setChartWidth(width);
+    });
+
+  resizeObserver.observe(element);
+
+  return () => {
+    resizeObserver.disconnect();
+  };
+}, []);
   const [activeSeries, setActiveSeries] =
     useState<ModelKey[]>([
       "gptOss20b",
@@ -260,32 +291,74 @@ const visibleDateIndexes = isLegendOnRight
       "nemotronNano9BV2",
     ]);
 
-    // const [activeTab, setActiveTab] = useState("overview");
-const handleLegendClick = (key: ModelKey) => {
-  setActiveSeries((prev) => {
-    const onlySelected =
-      prev.length === 1 &&
-      prev[0] === key;
+const visibleDateIndexes = useMemo(() => {
+  if (!chartWidth) {
+    return [];
+  }
 
-    if (onlySelected) {
-      return models.map((model) => model.key);
-    }
+  const averageLabelWidth = 52;
 
-    return [key];
-  });
-};
+  const labelsThatFit = Math.floor(
+    chartWidth / averageLabelWidth,
+  );
 
-  // const toggleSeries = (key: ModelKey) => {
-  //   setActiveSeries((current) => {
-  //     if (current.includes(key)) {
-  //       return current.filter(
-  //         (item) => item !== key,
-  //       );
-  //     }
+  const maxLabels = isLegendOnRight
+    ? 4
+    : isNarrowLayout
+      ? 6
+      : 12;
 
-  //     return [...current, key];
-  //   });
-  // };
+  const minLabels = isLegendOnRight
+    ? 3
+    : 4;
+
+  const labelCount = Math.max(
+    minLabels,
+    Math.min(
+      maxLabels,
+      labelsThatFit,
+      chartData.length,
+    ),
+  );
+
+  if (labelCount >= chartData.length) {
+    return chartData.map(
+      (_, index) => index,
+    );
+  }
+
+  const step =
+    (chartData.length - 1) /
+    (labelCount - 1);
+
+  const indexes = Array.from(
+    { length: labelCount },
+    (_, index) =>
+      Math.round(index * step),
+  );
+
+  return [...new Set(indexes)];
+}, [
+  chartWidth,
+  isNarrowLayout,
+  isLegendOnRight,
+]);
+
+  const handleLegendClick = (key: ModelKey) => {
+    setActiveSeries((prev) => {
+      const onlySelected =
+        prev.length === 1 &&
+        prev[0] === key;
+
+      if (onlySelected) {
+        return models.map(
+          (model) => model.key,
+        );
+      }
+
+      return [key];
+    });
+  };
 
   const getPosition = (index: number) => {
     if (chartData.length <= 1) return 0;
@@ -295,26 +368,97 @@ const handleLegendClick = (key: ModelKey) => {
       100
     );
   };
+  const updateHoveredIndex = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  const element = chartAreaRef.current;
 
-  // const hoveredData =
-  //   hoveredIndex !== null
-  //     ? chartData[hoveredIndex]
-  //     : null;
+  if (!element || chartData.length === 0) {
+    return;
+  }
 
-  // const total = useMemo(() => {
-  //   if (!hoveredData) return 0;
+  const rect = element.getBoundingClientRect();
 
-  //   return models.reduce((sum, model) => {
-  //     if (!activeSeries.includes(model.key)) {
-  //       return sum;
-  //     }
+  const x = event.clientX - rect.left;
 
-  //     return (
-  //       sum + hoveredData[model.key]
-  //     );
-  //   }, 0);
-  // }, [hoveredData, activeSeries]);
+  const percentage = Math.max(
+    0,
+    Math.min(1, x / rect.width),
+  );
 
+  const index = Math.round(
+    percentage * (chartData.length - 1),
+  );
+
+  setHoveredIndex(index);
+};
+
+const handlePointerDown = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  event.currentTarget.setPointerCapture(
+    event.pointerId,
+  );
+
+  updateHoveredIndex(event);
+};
+
+const handlePointerMove = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  updateHoveredIndex(event);
+};
+
+const handlePointerUp = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  if (
+    event.currentTarget.hasPointerCapture(
+      event.pointerId,
+    )
+  ) {
+    event.currentTarget.releasePointerCapture(
+      event.pointerId,
+    );
+  }
+};
+const handlePointerLeave = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  // Hide only for mouse.
+  // Keep selected position visible on mobile touch.
+  if (event.pointerType === "mouse") {
+    setHoveredIndex(null);
+  }
+};
+useEffect(() => {
+  const handleOutsidePointerDown = (
+    event: PointerEvent,
+  ) => {
+    const chartElement = chartAreaRef.current;
+
+    if (
+      chartElement &&
+      !chartElement.contains(
+        event.target as Node,
+      )
+    ) {
+      setHoveredIndex(null);
+    }
+  };
+
+  document.addEventListener(
+    "pointerdown",
+    handleOutsidePointerDown,
+  );
+
+  return () => {
+    document.removeEventListener(
+      "pointerdown",
+      handleOutsidePointerDown,
+    );
+  };
+}, []);
 return (
   <div
     className="
@@ -343,7 +487,7 @@ return (
   className="
     ml-auto
     cursor-pointer
-    text-[length:var(--font-size-sm)]
+    text-[length:var(--font-size-base)]
     text-[var(--color-text)]
     underline
     underline-offset-4
@@ -353,108 +497,124 @@ return (
 </button>
     </div>
 
-    {/* ================= CHART + LEGEND ================= */}
-    <div
+ {/* ==================== CHART SECTION ==================== */}
+   <div
       className={`flex w-full ${
         isLegendOnRight ? "flex-row" : "flex-col"
       }`}
     >
-
-    {/* ==================== CHART SECTION ==================== */}
-  <div
-  className={
-    isLegendOnRight
-      ? "relative flex-1 min-w-0"
-      : "relative w-full"
-  }
->
-      {/* CHART */}
+      {/* ================= CHART SECTION ================= */}
       <div
-        className="relative h-[285px]"
-        onMouseLeave={() => setHoveredIndex(null)}
+        ref={chartContainerRef}
+        className={
+          isLegendOnRight
+            ? "relative min-w-0 flex-1"
+            : "relative w-full"
+        }
       >
-        {/* Y AXIS LABELS */}
-<div
-  className="
-    absolute
-    left-2
-    top-[4px]
-    h-[212px]
-    w-8
-    text-[length:var(--font-size-sm)]
-    text-[var(--color-text-muted)]
-  "
->
-  {[3, 2, 1, 0].map((value) => (
+  {/* CHART */}
+  <div
+    className="relative h-[285px]"
+    // onMouseLeave={() =>
+    //   setHoveredIndex(null)
+    // }
+  >
+    {/* Y AXIS LABELS */}
     <div
-      key={value}
-      className="absolute -translate-y-1/2"
-      style={{
-        top: `${((MAX_VALUE - value) / MAX_VALUE) * 100}%`,
-
-        // Prevent top and bottom labels from crossing chart
-        transform:
-          value === MAX_VALUE
-            ? "translateY(0)"
-            : value === 0
-              ? "translateY(-100%)"
-              : "translateY(-50%)",
-      }}
+      className="
+        absolute
+        left-2
+        top-[4px]
+        h-[212px]
+        w-8
+        text-[length:var(--font-size-sm)]
+        text-[var(--color-text-muted)]
+      "
     >
-      {value}
-    </div>
-  ))}
-</div>
-
-        {/* ==================== CHART AREA ==================== */}
+      {[3, 2, 1, 0].map((value) => (
         <div
+          key={value}
           className="
             absolute
-            left-10
+            -translate-y-1/2
+          "
+          style={{
+            top: `${
+              ((MAX_VALUE - value) /
+                MAX_VALUE) *
+              100
+            }%`,
+
+            transform:
+              value === MAX_VALUE
+                ? "translateY(0)"
+                : value === 0
+                  ? "translateY(-100%)"
+                  : "translateY(-50%)",
+          }}
+        >
+          {value}
+        </div>
+      ))}
+    </div>
+
+    {/* ==================== CHART AREA ==================== */}
+ <div
+  ref={chartAreaRef}
+  onPointerDown={handlePointerDown}
+  onPointerMove={handlePointerMove}
+  onPointerUp={handlePointerUp}
+  onPointerLeave={handlePointerLeave}
+  className="
+    absolute
+    left-10
+    right-0
+    top-0
+    h-[220px]
+    border
+    border-dashed
+    border-[var(--color-border)]
+    touch-none
+  "
+>
+      {/* HORIZONTAL GRID */}
+      {[1, 2].map((value) => (
+        <div
+          key={value}
+          className="
+            pointer-events-none
+            absolute
+            left-0
             right-0
-            top-0
-            h-[220px]
-            border
+            border-t
             border-dashed
             border-[var(--color-border)]
           "
-        >
-          {/* HORIZONTAL GRID */}
-          {[1, 2].map((value) => (
-            <div
-              key={value}
-              className="
-                pointer-events-none
-                absolute
-                left-0
-                right-0
-                border-t
-                border-dashed
-                border-[var(--color-border)]
-              "
-              style={{
-                bottom: `${(value / MAX_VALUE) * 100}%`,
-              }}
-            />
-          ))}
+          style={{
+            bottom: `${
+              (value / MAX_VALUE) * 100
+            }%`,
+          }}
+        />
+      ))}
 
-          {/* VERTICAL GRID */}
-          {visibleDateIndexes.map((index) => (
-            <div
-              key={index}
-              className="
-                pointer-events-none
-                absolute
-                top-0
-                bottom-0
-                w-px
-                bg-[var(--color-border)]
-              "
-              style={{
-                left: `${getPosition(index)}%`,
-              }}
-            />
-          ))}
+      {/* VERTICAL GRID */}
+      {visibleDateIndexes.map((index) => (
+        <div
+          key={index}
+          className="
+            pointer-events-none
+            absolute
+            top-0
+            bottom-0
+            w-px
+            bg-[var(--color-border)]
+          "
+          style={{
+            left: `${getPosition(index)}%`,
+          }}
+        />
+      ))}
 
           {/* HOVER AREAS */}
           {chartData.map((item, index) => {
@@ -755,100 +915,132 @@ return (
     </div>
 
     {/* ==================== LEGEND ==================== */}
-    <div
-      className={
-        isLegendOnRight
-          ? `
-            ml-4
-            flex
-            min-w-[240px]
-            flex-col
-            border-l
-            border-[var(--color-border)]
-            pl-4
-          `
-          : `
-            flex
-            items-center
-            gap-5
-            border-t
-            border-[var(--color-border)]
-            pt-4
-          `
-      }
-    >
-      {/* RIGHT LEGEND HEADING */}
-     {isLegendOnRight && (
-  <div className="relative mb-4 flex items-center justify-between">
+ 
+<div
+  className={
+    isLegendOnRight
+      ? `
+        ml-2
+        flex
+        w-[150px]
+        min-w-[150px]
+        shrink-0
+        flex-col
+        border-l
+        border-[var(--color-border)]
+        pl-2
+        pt-1
+
+        sm:ml-4
+        sm:w-[190px]
+        sm:min-w-[190px]
+        sm:pl-4
+
+        lg:w-[240px]
+        lg:min-w-[240px]
+      `
+      : `
+        flex
+        w-full
+        items-center
+        gap-5
+        border-t
+        border-[var(--color-border)]
+        pt-4
+      `
+  }
+>
+  {/* ================= RIGHT LEGEND HEADER ================= */}
+  {isLegendOnRight && (
     <div
       className="
-        text-[12px]
-        uppercase
-        tracking-wider
-        text-[var(--color-text-muted)]
+        mb-5
+        flex
+        w-full
+        items-center
+        justify-between
       "
     >
-      Legend
-    </div>
+      <span
+        className="
+          text-[12px]
+          uppercase
+          tracking-wider
+          text-[var(--color-text-muted)]
+        "
+      >
+        Legend
+      </span>
 
+      <button
+        type="button"
+        onClick={() => setIsLegendOnRight(false)}
+        className="
+          flex
+          h-8
+          w-8
+          shrink-0
+          cursor-pointer
+          items-center
+          justify-center
+          rounded-md
+          text-[var(--color-text-muted)]
+          transition-colors
+          hover:bg-[var(--color-surface-secondary)]
+        "
+        aria-label="Move legend to bottom"
+      >
+        <PanelBottom size={16} />
+      </button>
+    </div>
+  )}
+
+  {/* ================= LEGEND ITEMS ================= */}
+  <div
+    className={
+      isLegendOnRight
+        ? "flex min-w-0 flex-col gap-4"
+        : "flex items-center gap-5"
+    }
+  >
+    {models.map((model) => (
+      <LegendItem
+  key={model.key}
+  color={model.color}
+  label={model.label}
+  isActive={activeSeries.includes(model.key)}
+  onClick={() => handleLegendClick(model.key)}
+  isBottomLegend={!isLegendOnRight}
+/>
+    ))}
+  </div>
+
+  {/* ================= MOVE LEGEND RIGHT ================= */}
+  {!isLegendOnRight && (
     <button
       type="button"
-      onClick={() => setIsLegendOnRight(false)}
+      onClick={() => setIsLegendOnRight(true)}
       className="
+        ml-auto
         flex
+        h-8
+        w-8
+        shrink-0
+        cursor-pointer
         items-center
         justify-center
-        cursor-pointer
+        rounded-md
+        
         text-[var(--color-text-muted)]
+        transition-colors
+        hover:bg-[var(--color-surface-secondary)]
       "
-      aria-label="Move legend to bottom"
+      aria-label="Move legend to right"
     >
-      <PanelBottom size={16} />
+      <PanelRight size={16} />
     </button>
-  </div>
-)}
-
-      {/* LEGEND ITEMS */}
-      <div
-        className={
-          isLegendOnRight
-            ? "flex flex-col gap-4"
-            : "flex items-center gap-5"
-        }
-      >
-        {models.map((model) => (
-          <LegendItem
-            key={model.key}
-            color={model.color}
-            label={model.label}
-            isActive={activeSeries.includes(
-              model.key,
-            )}
-            onClick={() =>
-              handleLegendClick(model.key)
-            }
-          />
-        ))}
-      </div>
-
- {!isLegendOnRight && (
-  <button
-    type="button"
-    onClick={() => setIsLegendOnRight(true)}
-    className="
-      ml-auto
-      flex
-      items-center
-      justify-center
-      cursor-pointer
-      text-[var(--color-text-muted)]
-    "
-    aria-label="Move legend to right"
-  >
-    <PanelRight size={16} />
-  </button>
-)}
-    </div>
+  )}
+</div>
     </div>
   </div>
 );

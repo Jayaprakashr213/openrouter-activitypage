@@ -4,19 +4,19 @@ export default function Guardrails() {
   return (
     <div
       className="
+        mt-6
+        flex
+        min-h-[315px]
+        items-center
+        justify-center
         rounded-xl
         border
-        mt-6
         border-dashed
         border-[var(--color-border)]
         bg-[var(--color-surface)]
-        min-h-[315px]
-        flex
-        items-center
-        justify-center
       "
     >
-      <div className="flex flex-col items-center text-center">
+      <div className="flex flex-col items-center px-4 text-center">
         {/* Icon */}
         <div
           className="
@@ -53,7 +53,7 @@ export default function Guardrails() {
             mt-2
             max-w-[430px]
             text-[length:var(--font-size-base)]
-            leading-6
+            leading-[1.5]
             text-[var(--color-text-secondary)]
           "
         >
@@ -68,8 +68,8 @@ export default function Guardrails() {
         <button
           className="
             mt-6
-            rounded-md
             cursor-pointer
+            rounded-md
             bg-[var(--color-primary)]
             px-5
             py-2.5

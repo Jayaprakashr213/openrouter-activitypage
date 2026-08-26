@@ -19,33 +19,58 @@ export function MiniSparkline({
   const chartRef = useRef<HTMLDivElement>(null);
 
   const dataLength = data.length;
+const updateHoveredIndex = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  const element = chartRef.current;
 
-  const handlePointerMove = (
-    event: React.PointerEvent<HTMLDivElement>
-  ) => {
-    const element = chartRef.current;
+  if (!element || dataLength === 0) return;
 
-    if (!element || dataLength === 0) return;
+  const rect = element.getBoundingClientRect();
 
-    const rect = element.getBoundingClientRect();
+  const x = event.clientX - rect.left;
 
-    const x = event.clientX - rect.left;
-
-    const percentage = Math.max(
-      0,
-      Math.min(1, x / rect.width)
-    );
-
-    const index = Math.round(
-      percentage * (dataLength - 1)
-    );
-
-    onHoverChange(index);
-  };
-
-  const handlePointerLeave = () => {
+  /* 
+   * If pointer reaches either end,
+   * hide the marker and restore
+   * Date / No prior data.
+   */
+  if (x <= 0 || x >= rect.width) {
     onHoverChange(null);
-  };
+    return;
+  }
+
+  const percentage = x / rect.width;
+
+  const index = Math.round(
+    percentage * (dataLength - 1),
+  );
+
+  onHoverChange(index);
+};
+const handlePointerDown = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  event.currentTarget.setPointerCapture(
+    event.pointerId,
+  );
+
+  updateHoveredIndex(event);
+};
+
+const handlePointerMove = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  updateHoveredIndex(event);
+};
+
+const handlePointerLeave = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  if (event.pointerType === "mouse") {
+    onHoverChange(null);
+  }
+};
 
   // Get chart values
   const values = data.map((item) => item.value);
@@ -100,18 +125,20 @@ export function MiniSparkline({
       : null;
 
   return (
-    <div
-      ref={chartRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-      className="
-        relative
-        h-12
-        w-full
-        cursor-crosshair
-        overflow-hidden
-      "
-    >
+<div
+  ref={chartRef}
+  onPointerDown={handlePointerDown}
+  onPointerMove={handlePointerMove}
+  onPointerLeave={handlePointerLeave}
+  className="
+    relative
+    h-12
+    w-full
+    cursor-crosshair
+    overflow-hidden
+    touch-none
+  "
+>
       {/* Sparkline */}
       <svg
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}

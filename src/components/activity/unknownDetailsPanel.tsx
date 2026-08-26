@@ -40,7 +40,7 @@ const [hoverPosition, setHoverPosition] = useState<{
   y: number;
 } | null>(null);
   return (
-   <div
+<div
   className="
     fixed
     right-0
@@ -48,64 +48,75 @@ const [hoverPosition, setHoverPosition] = useState<{
     bottom-0
     z-50
     flex
-    w-1/2
+    w-full
     flex-col
     border-l
     border-black/[0.05]
     bg-[var(--color-background)]
+
+    md:w-1/2
   "
 >
       {/* Header */}
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          border-b
-          border-black/[0.05]
-          px-5
-          py-4
-        "
-      >
-        <h2
-          className="
-            text-[length:var(--font-size-base)]
-            font-semibold
-            text-[var(--color-text)]
-          "
-        >
-          Unknown
-        </h2>
+  {/* Header */}
+<div
+  className="
+    flex
+    items-center
+    justify-between
+    border-b
+    border-black/[0.05]
+    px-4
+    py-3
 
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            className="
-              rounded-lg
-              border
-              border-black/[0.08]
-              px-4
-              py-2
-              text-sm
-              text-[var(--color-text)]
-              hover:bg-black/[0.03]
-            "
-          >
-            Explore
-          </button>
+    sm:px-5
+    sm:py-4
+  "
+>
+  <h2
+    className="
+      text-[length:var(--font-size-base)]
+      font-semibold
+      text-[var(--color-text)]
+    "
+  >
+    Unknown
+  </h2>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="
-              text-[var(--color-text-secondary)]
-              hover:opacity-70
-            "
-          >
-            ×
-          </button>
-        </div>
-      </div>
+  <div className="flex items-center gap-3 sm:gap-4">
+    <button
+      type="button"
+      className="
+        rounded-lg
+        border
+        border-black/[0.08]
+        px-3
+        py-1.5
+        text-sm
+        text-[var(--color-text)]
+        hover:bg-black/[0.03]
+
+        sm:px-4
+        sm:py-2
+      "
+    >
+      Explore
+    </button>
+
+    <button
+      type="button"
+      onClick={onClose}
+      className="
+        text-xl
+        leading-none
+        text-[var(--color-text-secondary)]
+        hover:opacity-70
+      "
+    >
+      ×
+    </button>
+  </div>
+</div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-5 py-6">
@@ -186,15 +197,19 @@ const [hoverPosition, setHoverPosition] = useState<{
             </div>
 
             {/* Chart area */}
-            <div
-              className="
-                absolute
-                bottom-0
-                left-12
-                right-0
-                top-0
-              "
-            >
+          {/* Chart area */}
+<div
+  className="
+    absolute
+    bottom-0
+    left-12
+    right-0
+    top-0
+    border-x
+    border-dashed
+    border-black/[0.08]
+  "
+>
               <div
                 className="
                   absolute

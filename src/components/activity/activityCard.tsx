@@ -30,59 +30,50 @@ export function ActivityMetricCard({
       }).format(hoveredDate)
     : "– No prior data";
 
-return (
-  <div
-    className="
-      rounded-lg
-      border
-      border-black/[0.04]
-      bg-[var(--color-surface)]
-      p-4
-      mt-5
-    "
-  >
+  return (
+    <div
+      className="
+        mt-5
+        rounded-lg
+        border
+        border-black/[0.04]
+        bg-[var(--color-surface)]
+        p-4
+      "
+    >
       <div className="flex items-center gap-4">
         {/* Left content */}
         <div className="min-w-[105px]">
-          <p
-            className="
-              text-[length:var(--font-size-base)]
-              text-[var(--color-text-secondary)]
-            "
-          >
+          <p className="text-[length:var(--font-size-base)] text-[var(--color-text-secondary)]">
             {title}
           </p>
 
-          <p
-            className="
-              mt-1
-              text-2xl
-              font-medium
-              text-[var(--color-text)]
-            "
-          >
+          <p className="mt-1 text-2xl font-medium text-[var(--color-text)]">
             {value}
           </p>
         </div>
 
         {/* Interactive chart */}
-        <div className="min-w-0 flex-1">
-          <MiniSparkline
-            data={chartData}
-            hoveredIndex={hoveredIndex}
-            onHoverChange={onHoverChange}
-          />
-        </div>
+      <div
+  className="
+    ml-auto
+    w-[90px]
+    shrink-0
+
+    sm:w-[120px]
+    md:w-[130px]
+  "
+>
+  <MiniSparkline
+    data={chartData}
+    hoveredIndex={hoveredIndex}
+    onHoverChange={onHoverChange}
+  />
+</div>
       </div>
 
-      {/* Date / default text */}
-      <p
-        className="
-          mt-1
-          text-[length:var(--font-size-base)]
-          text-[var(--color-text-secondary)]
-        "
-      >
+      {/* Date / hovered date */}
+      <p className="mt-1 text-[length:var(--font-size-base)] text-[var(--color-text-secondary)]">
         {formattedDate}
       </p>
     </div>

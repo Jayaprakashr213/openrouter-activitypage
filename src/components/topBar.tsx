@@ -7,38 +7,47 @@ import {
   Sparkles,
   Video,
   Zap,
+    Search,
+  Menu,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import  type {ThemeMode} from "../theme/theme.types";
 import PreferencesModal from "./preferenceModal";
 import {
   Monitor,
   BarChart3,
-  ChevronDown,
-  ChevronUp,
   CircleUserRound,
   FileText,
   KeyRound,
   LogOut,
   Moon,
-  Search,
   Settings,
   Sun,
   Users,
+  House,
+  Box,
+  FlaskConical,
+  Trophy,
+  PanelsTopLeft,
+  Building2,
+  BookOpen,
+
 } from "lucide-react";
 
 import { useTheme } from "../theme/themeProvider";
+import { navItems } from "../utils/filterOptions";
 
-const navItems = [
-  "Home",
-  "Models",
-  "Benchmarks",
-  "Chat",
-  "Rankings",
-  "Apps",
-  "Enterprise",
-  "Docs",
+const navItemsm = [
+  { label: "Home", icon: House },
+  { label: "Models", icon: Box },
+  { label: "Benchmarks", icon: FlaskConical },
+  { label: "Chat", icon: MessageSquare },
+  { label: "Rankings", icon: Trophy },
+  { label: "Apps", icon: PanelsTopLeft },
+  { label: "Enterprise", icon: Building2 },
+  { label: "Docs", icon: BookOpen },
 ];
-
 const searchItems = [
   {
     name: "Ox Alpha",
@@ -117,8 +126,14 @@ const accountItems = [
     icon: Settings,
   },
 ];
-
-export function TopNavbar() {
+type TopNavbarProps = {
+  onMenuClick: () => void;
+  announcementVisible: boolean;
+};
+export function TopNavbar({
+  onMenuClick,
+  announcementVisible,
+}: TopNavbarProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
@@ -153,151 +168,147 @@ export function TopNavbar() {
 return (
   <>
    <header
-  className="
+  className={`
     fixed
-    top-0
-    left-0
-    right-0
-    z-50
-    h-16
-    w-full
+    inset-x-0
+    z-40
+    h-[var(--top-nav-height)]
     border-b
     border-[var(--color-border)]
     bg-[var(--color-surface)]
     text-[var(--color-text)]
-  "
+    transition-[top]
+    duration-200
+    ${
+      announcementVisible
+        ? "top-12"
+        : "top-0"
+    }
+  `}
 >
-      <div className="flex h-full items-center">
+<div className="flex h-full w-full items-center">
 
-        {/* Logo */}
-        <div className="flex w-[220px] shrink-0 items-center px-8">
-          <div className="flex items-center gap-2.5">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M7 6.5C4.5 6.5 3 8.1 3 10.2C3 12.3 4.5 13.5 7 13.5H14.5C17 13.5 18.5 14.7 18.5 16.8C18.5 18.9 17 20.5 14.5 20.5H7"
-                stroke="var(--color-primary)"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
+  {/* LEFT SIDE */}
+  <div className="flex shrink-0 items-center">
+    {/* Mobile menu */}
+    <button
+      type="button"
+      onClick={onMenuClick}
+      aria-label="Open menu"
+      className="
+        flex
+        h-full
+        w-12
+        shrink-0
+        items-center
+        justify-center
+        lg:hidden
+      "
+    >
+      <Menu size={20} strokeWidth={1.8} />
+    </button>
 
-              <path
-                d="M14 6.5H21"
-                stroke="var(--color-primary)"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
-            </svg>
+    {/* Logo */}
+    <div
+      className="
+        flex
+        shrink-0
+        items-center
+        px-2
+        lg:w-[220px]
+        lg:px-8
+      "
+    >
+      <div className="flex items-center gap-2.5">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 28 28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M7 6.5C4.5 6.5 3 8.1 3 10.2C3 12.3 4.5 13.5 7 13.5H14.5C17 13.5 18.5 14.7 18.5 16.8C18.5 18.9 17 20.5 14.5 20.5H7"
+            stroke="var(--color-primary)"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
 
-            <span
-              className="
-                text-[20px]
-                font-semibold
-                tracking-[-0.04em]
-                text-[var(--color-text)]
-              "
-            >
-              openrouter
-            </span>
-          </div>
-        </div>
+          <path
+            d="M14 6.5H21"
+            stroke="var(--color-primary)"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+        </svg>
 
-        {/* Search */}
-    {/* Search */}
-<div className="flex flex-1 items-center pl-3">
+        <span
+          className="
+            hidden
+            text-[20px]
+            font-semibold
+            tracking-[-0.04em]
+            sm:block
+          "
+        >
+          openrouter
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {/* RIGHT SIDE */}
+{/* SEARCH - stays on left */}
+<div className="ml-auto shrink-0 lg:ml-0">
   <button
     type="button"
     onClick={() => setSearchOpen(true)}
     className="
       flex
-      h-11
-      w-[300px]
+      h-10
+      w-10
+      shrink-0
       items-center
-      justify-between
+      justify-center
       rounded-lg
-      border
-      border-[var(--color-border)]
-      bg-[var(--color-background)]
-      px-3
-      text-[var(--color-text-secondary)]
       transition
-      hover:border-[var(--color-primary)]
+      hover:bg-[var(--color-surface-secondary)]
+
+      md:mx-2
+      md:h-8
+      md:w-[270px]
+      md:justify-between
+      md:border
+      md:border-[var(--color-border)]
+      md:bg-[var(--color-background)]
+      md:px-3
     "
   >
-    {/* Search content */}
     <span className="flex items-center gap-2.5">
-      <Search
-        size={18}
-        strokeWidth={1.8}
-      />
+      <Search size={18} strokeWidth={1.8} />
 
-      <span
-        className="
-          text-[var(--font-size-sm)]
-          font-normal
-        "
-      >
+      <span className="hidden md:block">
         Search
       </span>
     </span>
 
-    {/* Keyboard shortcut */}
-    <span className="flex items-center gap-1.5">
-
-      {/* Command key */}
-      <span
-        className="
-          flex
-          h-8
-          min-w-8
-          items-center
-          justify-center
-          rounded-lg
-          bg-[var(--color-surface-secondary)]
-          px-2
-          text-[20px]
-          font-normal
-          leading-none
-          text-[var(--color-text-secondary)]
-        "
-      >
+    <span className="hidden items-center gap-1.5 md:flex">
+      <span className="flex h-6 min-w-8 items-center justify-center rounded-lg bg-[var(--color-surface-secondary)] px-2 text-[12px]">
         ⌘
       </span>
 
-      {/* K key */}
-      <span
-        className="
-          flex
-          h-8
-          min-w-8
-          items-center
-          justify-center
-          rounded-lg
-          bg-[var(--color-surface-secondary)]
-          px-2
-          text-[18px]
-          font-medium
-          leading-none
-          text-[var(--color-text-secondary)]
-        "
-      >
+      <span className="flex h-6 min-w-8 items-center justify-center rounded-lg bg-[var(--color-surface-secondary)] px-2 text-[12px]">
         K
       </span>
-
     </span>
   </button>
 </div>
-        {/* Navigation */}
-       
 
-          {/* Navigation */}
-       <nav className="hidden items-center gap-6 px-5 lg:flex">
+{/* SPACER - pushes navigation and profile right */}
+<div className="hidden min-w-0 flex-1 lg:block" />
+
+{/* NAVIGATION - right side */}
+<nav className="hidden shrink-0 items-center gap-6 px-5 lg:flex">
   {navItems.map((item) => (
     <button
       key={item}
@@ -305,8 +316,6 @@ return (
       className="
         whitespace-nowrap
         cursor-pointer
-        font-normal
-        tracking-[-0.01em]
         text-[var(--color-text-secondary)]
         transition-colors
         hover:text-[var(--color-primary)]
@@ -317,62 +326,82 @@ return (
   ))}
 </nav>
 
-          {/* Profile */}
-          <div className="relative ml-auto shrink-0 px-4">
-            <button
-              type="button"
-              onClick={() => {
-                setProfileOpen((current) => !current);
-                setSearchOpen(false);
-              }}
-              className="
-                flex
-                items-center
-                gap-2
-                rounded-md
-                px-2
-                py-1.5
-                text-sm
-                transition
-                hover:bg-[var(--color-background)]
-              "
-            >
-              <div
-                className="
-                  flex
-                  h-7
-                  w-7
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-[var(--color-primary)]
-                  text-xs
-                  font-medium
-                  text-white
-                "
-              >
-                R
-              </div>
+{/* PROFILE - right side */}
+<div className="relative shrink-0 px-3.5">
+  <button
+    type="button"
+    onClick={() => {
+      setProfileOpen((current) => !current);
+      setSearchOpen(false);
+    }}
+    className="
+      flex
+      shrink-0
+      items-center
+      gap-2
+      rounded-md
+      px-1
+      py-1.5
+      text-sm
+      transition
+      hover:bg-[var(--color-surface-secondary)]
+    "
+  >
+    <div
+      className="
+        flex
+        h-8
+        w-8
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        bg-[var(--color-primary)]
+        text-sm
+        font-medium
+        text-white
+      "
+    >
+      R
+    </div>
 
-              <span className="hidden xl:block">Personal</span>
+    <span
+      className="
+        whitespace-nowrap
+        text-[var(--font-size-base)]
+        font-normal
+        text-[var(--color-text-secondary)]
+      "
+    >
+      Personal
+    </span>
 
-              {profileOpen ? (
-                <ChevronUp size={14} />
-              ) : (
-                <ChevronDown size={14} />
-              )}
-            </button>
+    {profileOpen ? (
+      <ChevronUp
+        size={15}
+        strokeWidth={1.8}
+        className="shrink-0 text-[var(--color-text-secondary)]"
+      />
+    ) : (
+      <ChevronDown
+        size={15}
+        strokeWidth={1.8}
+        className="shrink-0 text-[var(--color-text-secondary)]"
+      />
+    )}
+  </button>
 
-           {profileOpen && (
-  <ProfileDropdown
-    mode={settings.mode}
-    setMode={setMode}
-    onPreferences={() => setPreferencesOpen(true)}
-  />
-)}
-          </div>
-        </div>
-      </header>
+  {profileOpen && (
+    <ProfileDropdown
+      mode={settings.mode}
+      setMode={setMode}
+      onPreferences={() => setPreferencesOpen(true)}
+      navItemsm={navItemsm}
+    />
+  )}
+</div>
+  </div>
+</header>
 
       {searchOpen && (
         <SearchModal onClose={() => setSearchOpen(false)} />
@@ -399,21 +428,28 @@ type ProfileDropdownProps = {
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
   onPreferences: () => void;
+   navItemsm: {
+    label: string;
+    icon: React.ElementType;
+  }[];
 };
 function ProfileDropdown({
   mode,
   setMode,
   onPreferences,
+  navItemsm,
 }: ProfileDropdownProps) {
+  
   return (
     <div
       className="
         absolute
-        right-4
+        right-0
         top-12
         z-50
         w-64
-        overflow-hidden
+        max-h-[calc(100vh-5rem)]
+        overflow-y-auto
         rounded-lg
         border
         border-[var(--color-border)]
@@ -459,6 +495,7 @@ function ProfileDropdown({
 
         <button
           type="button"
+          onClick={onPreferences}
           className="
             rounded-md
             p-1.5
@@ -471,20 +508,22 @@ function ProfileDropdown({
         </button>
       </div>
 
-      {/* Menu */}
-      <div className="p-1.5">
-        {accountItems.map((item) => {
-          const Icon = item.icon;
+      {/* ================= MOBILE NAVIGATION ================= */}
+    <div
+  className="
+    lg:hidden
+    border-b
+    border-[var(--color-border)]
+    p-1.5
+  "
+>
+  {navItemsm.map((item) => {
+    const Icon = item.icon;
 
-         return (
+    return (
       <button
         key={item.label}
         type="button"
-     onClick={() => {
-  if (item.label === "Preferences") {
-    onPreferences();
-  }
-}}
         className="
           flex
           w-full
@@ -495,6 +534,7 @@ function ProfileDropdown({
           px-2.5
           py-2
           text-left
+           text-base
           text-[var(--color-text-secondary)]
           transition
           hover:bg-[var(--color-background)]
@@ -506,6 +546,45 @@ function ProfileDropdown({
         <span>{item.label}</span>
       </button>
     );
+  })}
+</div>
+
+      {/* ================= ACCOUNT MENU ================= */}
+      <div className="p-1.5">
+        {accountItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => {
+                if (item.label === "Preferences") {
+                  onPreferences();
+                }
+              }}
+              className="
+                flex
+                w-full
+                cursor-pointer
+                items-center
+                gap-3
+                rounded-md
+                px-2.5
+                py-2
+                text-left
+                text-base
+                text-[var(--color-text-secondary)]
+                transition
+                hover:bg-[var(--color-background)]
+                hover:text-[var(--color-primary)]
+              "
+            >
+              <Icon size={18} />
+
+              <span>{item.label}</span>
+            </button>
+          );
         })}
 
         {/* Sign out */}
@@ -515,7 +594,6 @@ function ProfileDropdown({
             flex
             w-full
             cursor-pointer
-            text-[16px]
             items-center
             gap-3
             rounded-md
@@ -532,53 +610,54 @@ function ProfileDropdown({
         </button>
       </div>
 
-      {/* Theme controls */}
-     <div
-  className="
-    border-t
-    border-[var(--color-border)]
-    p-2
-  "
->
-  <div
-    className="
-      flex
-      h-12
-      w-full
-      items-center
-      gap-1
-      rounded-lg
-      border
-      border-[var(--color-border)]
-      bg-[var(--color-background)]
-      p-0.5
-    "
-  >
-    {/* Light */}
-    <ThemeButton
-      active={mode === "light"}
-      onClick={() => setMode("light")}
-    >
-      <Sun size={17} strokeWidth={2} />
-    </ThemeButton>
+      {/* ================= THEME CONTROLS ================= */}
+      <div
+        className="
+          border-t
+          border-[var(--color-border)]
+          p-2
+          mb-5
+        "
+      >
+        <div
+          className="
+            flex
+            h-12
+            w-full
+            items-center
+            gap-1
+            rounded-lg
+            border
+            border-[var(--color-border)]
+            bg-[var(--color-background)]
+            p-0.5
+          "
+        >
+          {/* Light */}
+          <ThemeButton
+            active={mode === "light"}
+            onClick={() => setMode("light")}
+          >
+            <Sun size={17} strokeWidth={2} />
+          </ThemeButton>
 
-    {/* Dark */}
-    <ThemeButton
-      active={mode === "dark"}
-      onClick={() => setMode("dark")}
-    >
-      <Moon size={17} strokeWidth={2} />
-    </ThemeButton>
+          {/* Dark */}
+          <ThemeButton
+            active={mode === "dark"}
+            onClick={() => setMode("dark")}
+          >
+            <Moon size={17} strokeWidth={2} />
+          </ThemeButton>
 
-    {/* System */}
-    <ThemeButton
-      active={mode === "system"}
-      onClick={() => setMode("system")}
-    >
-      <Monitor size={17} strokeWidth={2} />
-    </ThemeButton>
-  </div>
-</div>
+          {/* System */}
+          <ThemeButton
+            active={mode === "system"}
+            onClick={() => setMode("system")}
+          >
+            <Monitor size={17} strokeWidth={2} />
+          </ThemeButton>
+        </div>
+      </div>
     </div>
   );
 }

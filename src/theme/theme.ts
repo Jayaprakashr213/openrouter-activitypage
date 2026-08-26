@@ -71,46 +71,93 @@ export const fontFamilies: Record<FontFamily, string> = {
   system: "system-ui, sans-serif",
   mono: "ui-monospace, SFMono-Regular, Menlo, monospace",
 };
-
 export const fontSizes: Record<
   FontSize,
   {
-    xs: string;
-    sm: string;
-    base: string;
-    lg: string;
-    xl: string;
-    "2xl": string;
-    "3xl": string;
+    desktop: {
+      xs: string;
+      sm: string;
+      base: string;
+      lg: string;
+      xl: string;
+      "2xl": string;
+      "3xl": string;
+    };
+
+    mobile: {
+      xs: string;
+      sm: string;
+      base: string;
+      lg: string;
+      xl: string;
+      "2xl": string;
+      "3xl": string;
+    };
   }
 > = {
   small: {
-    xs: "0.6875rem",
-    sm: "0.75rem",
-    base: "0.875rem",
-    lg: "1rem",
-    xl: "1.125rem",
-    "2xl": "1.375rem",
-    "3xl": "1.75rem",
+    desktop: {
+      xs: "0.6875rem",
+      sm: "0.75rem",
+      base: "0.875rem",
+      lg: "1rem",
+      xl: "1.125rem",
+      "2xl": "1.375rem",
+      "3xl": "1.75rem",
+    },
+
+    mobile: {
+      xs: "0.625rem",
+      sm: "0.6875rem",
+      base: "0.8125rem",
+      lg: "0.9375rem",
+      xl: "1rem",
+      "2xl": "1.25rem",
+      "3xl": "1.5rem",
+    },
   },
 
   medium: {
-    xs: "0.75rem",
-    sm: "0.875rem",
-    base: "1rem",
-    lg: "1.125rem",
-    xl: "1.25rem",
-    "2xl": "1.5rem",
-    "3xl": "1.875rem",
+    desktop: {
+      xs: "0.75rem",
+      sm: "0.875rem",
+      base: "1rem",
+      lg: "1.125rem",
+      xl: "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+    },
+
+    mobile: {
+      xs: "0.6875rem",
+      sm: "0.75rem",
+      base: "0.875rem",
+      lg: "1rem",
+      xl: "1.125rem",
+      "2xl": "1.375rem",
+      "3xl": "1.75rem",
+    },
   },
 
   large: {
-    xs: "0.8125rem",
-    sm: "0.9375rem",
-    base: "1.0625rem",
-    lg: "1.25rem",
-    xl: "1.375rem",
-    "2xl": "1.625rem",
-    "3xl": "2.125rem",
+    desktop: {
+      xs: "0.8125rem",
+      sm: "0.9375rem",
+      base: "1.0625rem",
+      lg: "1.25rem",
+      xl: "1.375rem",
+      "2xl": "1.625rem",
+      "3xl": "2.125rem",
+    },
+
+    mobile: {
+      xs: "0.75rem",
+      sm: "0.8125rem",
+      base: "0.9375rem",
+      lg: "1.125rem",
+      xl: "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+    },
   },
 };

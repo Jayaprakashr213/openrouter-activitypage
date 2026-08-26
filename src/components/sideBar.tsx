@@ -6,131 +6,79 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
-  LayoutGrid,
-  KeyRound,
-  ShieldCheck,
-  Database,
-  ArrowRightLeft,
-  SlidersHorizontal,
-  Puzzle,
-  Eye,
-  Tag,
-  Settings,
-  User,
-  Activity,
-  List,
-  CreditCard,
-  LockKeyhole,
-  Shield,
+  
 } from "lucide-react";
-
-interface SidebarProps {
+import { mainItems,accountItems } from "../utils/filterOptions";
+type SidebarProps = {
   activeItem?: string;
   onNavigate?: (item: string) => void;
-}
-
-const mainItems = [
-  {
-    label: "Overview",
-    icon: LayoutGrid,
-  },
-  {
-    label: "API Keys",
-    icon: KeyRound,
-  },
-  {
-    label: "Guardrails",
-    icon: ShieldCheck,
-  },
-  {
-    label: "BYOK",
-    icon: Database,
-  },
-  {
-    label: "Routing",
-    icon: ArrowRightLeft,
-  },
-  {
-    label: "Presets",
-    icon: SlidersHorizontal,
-  },
-  {
-    label: "Plugins",
-    icon: Puzzle,
-  },
-  {
-    label: "Observability",
-    icon: Eye,
-  },
-  {
-    label: "Classifiers",
-    icon: Tag,
-    badge: "Beta",
-  },
-  {
-    label: "Settings",
-    icon: Settings,
-  },
-];
-
-const accountItems = [
-  {
-    label: "Profile",
-    icon: User,
-  },
-  {
-    label: "Activity",
-    icon: Activity,
-  },
-  {
-    label: "Logs",
-    icon: List,
-  },
-  {
-    label: "Credits",
-    icon: CreditCard,
-  },
-  {
-    label: "Management Keys",
-    icon: KeyRound,
-  },
-  {
-    label: "Privacy",
-    icon: LockKeyhole,
-  },
-  {
-    label: "Preferences",
-    icon: Shield,
-  },
-];
+  isOpen?: boolean;
+  onClose?: () => void;
+  announcementVisible?: boolean;
+};
 
 export function Sidebar({
   activeItem = "Activity",
   onNavigate,
+  isOpen = false,
+  onClose,
+  announcementVisible = false,
 }: SidebarProps) {
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
 
   const handleNavigate = (item: string) => {
     onNavigate?.(item);
+    onClose?.();
   };
 
   return (
-    <aside
-      className="
-        fixed
-        left-0
-        top-16
-        bottom-0
-        z-40
-        flex
-        w-[250px]
-        flex-col
-        border-r
-        border-[var(--color-border)]
-        bg-[var(--color-surface)]
-        text-[var(--color-text)]
-      "
-    >
+    <>
+      {isOpen && (
+        <button
+          type="button"
+          aria-label="Close sidebar"
+          onClick={onClose}
+          className="
+            fixed
+            inset-0
+            z-30
+            bg-black/40
+            backdrop-blur-sm
+            lg:hidden
+          "
+        />
+      )}
+
+      <aside
+        className={`
+          fixed
+          left-0
+          bottom-0
+          z-40
+          flex
+          w-[300px]
+          flex-col
+          border-r
+          border-[var(--color-border)]
+          bg-[var(--color-surface)]
+          text-[var(--color-text)]
+          transition-[top,transform]
+          duration-300
+          ease-in-out
+          md:w-[250px]
+          ${
+            announcementVisible
+              ? "top-[calc(var(--top-nav-height)+3rem)]"
+              : "top-[var(--top-nav-height)]"
+          }
+          ${
+            isOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+          }
+          lg:translate-x-0
+        `}
+      >
       {/* Workspace */}
    <div className="relative px-4 pt-3 pb-2">
   <div
@@ -338,6 +286,7 @@ export function Sidebar({
         </nav>
       </div>
     </aside>
+    </>
   );
 }
 

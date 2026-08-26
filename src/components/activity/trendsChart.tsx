@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useRef,useEffect } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -49,6 +49,8 @@ type CustomTickProps = {
     index?: number;
   };
   activeIndex: number | null;
+  isNarrowLayout: boolean;
+  isLastTick: boolean;
 };
 
 const CustomTooltip = ({ active, label }: any) => {
@@ -73,36 +75,43 @@ function CustomXAxisTick({
   y = 0,
   payload,
   activeIndex,
+  isNarrowLayout,
+  isLastTick,
 }: CustomTickProps) {
-  const isActive = payload?.index === activeIndex;
+  const isActive =
+    payload?.index === activeIndex;
 
   return (
     <g transform={`translate(${x},${y})`}>
       {isActive && (
         <rect
-          x={-24}
+          x={isNarrowLayout ? -20 : -24}
           y={2}
-          width={48}
-          height={24}
-          rx={7}
+          width={isNarrowLayout ? 40 : 48}
+          height={isNarrowLayout ? 20 : 24}
+          rx={6}
           fill="var(--color-surface)"
           stroke="var(--color-border)"
         />
       )}
 
       <text
-        x={0}
-        y={18}
+        x={isLastTick ? -8 : 0}
+        y={isNarrowLayout ? 15 : 18}
         textAnchor="middle"
-        fontSize="12"
-        fill="var(--color-text-secondary)"
+        fontSize={isNarrowLayout ? 10 : 12}
+        fill={
+          isActive
+            ? "var(--color-text)"
+            : "var(--color-text-secondary)"
+        }
+        fontWeight={isActive ? 500 : 400}
       >
         {payload?.value}
       </text>
     </g>
   );
 }
-
 export function TrendsChart({
   title,
   data,
@@ -120,6 +129,26 @@ export function TrendsChart({
     useState<ChartType>(initialType);
 
   const [isLegendRight, setIsLegendRight] = useState(false);
+  const chartWrapperRef = useRef<HTMLDivElement>(null);
+
+const [isNarrowLayout, setIsNarrowLayout] =
+  useState(false);
+
+useEffect(() => {
+  const element = chartWrapperRef.current;
+
+  if (!element) return;
+
+  const observer = new ResizeObserver(([entry]) => {
+    const width = entry.contentRect.width;
+
+    setIsNarrowLayout(width < 640);
+  });
+
+  observer.observe(element);
+
+  return () => observer.disconnect();
+}, []);
 
 //  const fullVisibleLabels = data.map((item) => item.date);
 
@@ -129,13 +158,32 @@ export function TrendsChart({
 // const rightLegendVisibleLabels = data
 //   .filter((_, index) => index % 2 === 0)
 //   .map((item) => item.date);
+const effectiveLegendRight = isLegendRight;
 
-const labelStep = isLegendRight ? 3 : 2;
+const maxVisibleLabels =
+  isNarrowLayout && effectiveLegendRight
+    ? 3
+    : isNarrowLayout
+      ? 6
+      : effectiveLegendRight
+        ? 7
+        : 10;
+
+const labelStep = Math.max(
+  1,
+  Math.ceil(
+    (data.length - 1) /
+      (maxVisibleLabels - 1),
+  ),
+);
 
 const visibleLabels = data
-  .filter((_, index) => index % labelStep === 0)
+  .filter(
+    (_, index) =>
+      index % labelStep === 0 ||
+      index === data.length - 1,
+  )
   .map((item) => item.date);
-
   const commonProps = {
     data,
     margin: {
@@ -165,31 +213,37 @@ const visibleLabels = data
         horizontal
       />
 
- <XAxis
+<XAxis
   dataKey="date"
   axisLine={false}
   tickLine={false}
-  height={38}
+  height={isNarrowLayout ? 32 : 38}
   interval={0}
   ticks={visibleLabels}
+  minTickGap={isNarrowLayout ? 12 : 20}
   tick={(props) => (
     <CustomXAxisTick
       {...props}
       activeIndex={activeIndex}
+      isNarrowLayout={isNarrowLayout}
+      isLastTick={
+        props.payload?.value ===
+        visibleLabels[visibleLabels.length - 1]
+      }
     />
   )}
 />
 
-      <YAxis
-        axisLine={false}
-        tickLine={false}
-        width={42}
-        tick={{
-          fontSize: 12,
-          fill: "var(--color-text-secondary)",
-        }}
-        tickFormatter={yAxisFormatter}
-      />
+    <YAxis
+  axisLine={false}
+  tickLine={false}
+  width={isNarrowLayout ? 34 : 42}
+  tick={{
+    fontSize: isNarrowLayout ? 11 : 12,
+    fill: "var(--color-text-secondary)",
+  }}
+  tickFormatter={yAxisFormatter}
+/>
 
      <Tooltip
   cursor={{
@@ -255,33 +309,57 @@ const visibleLabels = data
         p-3
       "
     >
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-[var(--color-text)]">
+     <div
+  className="
+    mb-3
+    flex
+    items-center
+    justify-between
+    gap-3
+    sm:mb-4
+  "
+>
+  <h3
+    className="
+      text-[var(--font-size-md)]
+      font-semibold
+      text-[var(--color-text)]
+    "
+  >
           {title}
         </h3>
 
-        <button
-          type="button"
-          className="
-            text-sm
-            text-[var(--color-text)]
-            underline
-            underline-offset-4
-          "
-        >
-          Explore ›
-        </button>
+     <button
+  type="button"
+  className="
+    shrink-0
+    text-[var(--font-size-sm)]
+    text-[var(--color-text)]
+    underline
+    underline-offset-4
+  "
+>
+  Explore ›
+</button>
       </div>
 
       {/* Chart + optional right legend */}
-      <div className="flex h-[290px] w-full">
-        <div
-          className={
-            isLegendRight
-              ? "min-w-0 flex-1"
-              : "w-full"
-          }
-        >
+      <div
+  ref={chartWrapperRef}
+  className="
+    flex
+    h-[260px]
+    w-full
+    sm:h-[290px]
+  "
+>
+      <div
+  className={
+    effectiveLegendRight
+      ? "min-w-0 flex-1"
+      : "w-full"
+  }
+>
           <ResponsiveContainer width="100%" height="100%">
             {chartType === "line" && (
               <LineChart {...commonProps}>
@@ -304,78 +382,144 @@ const visibleLabels = data
         </div>
 
         {/* Right side legend */}
-        {isLegendRight && (
-          <div
-            className="
-              ml-3
-              w-[175px]
-              border-l
-              border-[var(--color-border)]
-              pl-3
-              pt-1
-            "
-          >
-            <p
-              className="
-                mb-3
-                text-xs
-                uppercase
-                tracking-wide
-                text-[var(--color-text-secondary)]
-              "
-            >
-              Legend
-            </p>
-
-            <div className="flex flex-col gap-3">
-              {series.map((item) => (
-                <div
-                  key={item.key}
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-xs
-                    text-[var(--color-text)]
-                  "
-                >
-                  <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{
-                      backgroundColor: item.color,
-                    }}
-                  />
-
-                  <span className="truncate">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-<div className="relative mt-2 flex items-center justify-between gap-4 border-t border-[var(--color-border)] pt-3">
-  {/* Legend */}
-  <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-    {series.map((item) => (
-      <div
-        key={item.key}
-        className="flex items-center gap-2 text-xs text-[var(--color-text)]"
+  {/* Right side legend */}
+{/* Right side legend */}
+{effectiveLegendRight && (
+  <div
+    className="
+      ml-3
+      flex
+      w-[175px]
+      shrink-0
+      flex-col
+      border-l
+      border-[var(--color-border)]
+      pl-3
+      pt-1
+    "
+  >
+    <div className="mb-4 flex items-center justify-between">
+      <p
+        className="
+          text-xs
+          uppercase
+          tracking-wide
+          text-[var(--color-text-secondary)]
+        "
       >
-        <span
-          className="h-2 w-2 rounded-full"
-          style={{
-            backgroundColor: item.color,
-          }}
-        />
+        Legend
+      </p>
 
-        <span>{item.label}</span>
+      {/* Controls */}
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() =>
+            setIsControlsOpen(!isControlsOpen)
+          }
+        >
+          <SlidersHorizontal
+            size={16}
+            className="text-[var(--color-text-secondary)]"
+          />
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            setIsLegendRight(!isLegendRight)
+          }
+        >
+          <PanelRight
+            size={16}
+            className="text-[var(--color-text-secondary)]"
+          />
+        </button>
       </div>
-    ))}
-  </div>
+    </div>
 
+    <div className="flex flex-col gap-3">
+      {series.map((item) => (
+        <div
+          key={item.key}
+          className="
+            flex
+            min-w-0
+            items-center
+            gap-2
+            text-xs
+            text-[var(--color-text)]
+          "
+        >
+          <span
+            className="
+              h-2.5
+              w-2.5
+              shrink-0
+              rounded-full
+            "
+            style={{
+              backgroundColor: item.color,
+            }}
+          />
+
+          <span className="truncate">
+            {item.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+      </div>
+
+{!effectiveLegendRight && (
+  <div className="relative mt-2 flex items-center justify-between gap-4 border-t border-[var(--color-border)] pt-3">
+  {/* Legend */}
+{/* Bottom legend */}
+<div
+  className="
+    flex
+    min-w-0
+    flex-wrap
+    items-center
+    gap-x-3
+    gap-y-2
+    sm:gap-x-5
+  "
+>
+  {series.map((item) => (
+    <div
+      key={item.key}
+      className="
+        flex
+        min-w-0
+        items-center
+        gap-1.5
+        text-[12px]
+        text-[var(--color-text)]
+        sm:gap-2
+        sm:text-[var(--font-size-chart-legend)]
+      "
+    >
+      <span
+        className="
+          h-2
+          w-2
+          shrink-0
+          rounded-full
+        "
+        style={{
+          backgroundColor: item.color,
+        }}
+      />
+
+      <span className="truncate">
+        {item.label}
+      </span>
+    </div>
+  ))}
+</div>
   {/* Chart controls */}
 <div className="relative flex shrink-0 items-center gap-1">
 
@@ -575,6 +719,7 @@ const visibleLabels = data
     )}
   </div>
 </div>
+)}
     </div>
   );
 }

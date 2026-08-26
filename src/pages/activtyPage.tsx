@@ -239,253 +239,337 @@ const [trendDropdownOpen, setTrendDropdownOpen] = useState(false);
   // Total spend - straight line
   const selectedTrendConfig = modelTrendConfig[trendMetric];
   const selectedApiKeyTrendConfig = apiKeyTrendConfig[trendMetric];
-  return (
-    <div
-      className="
-        min-h-full
-        bg-[var(--color-background)]
-        px-6
-        py-5
-      "
-    >
-      <ActivityHeader />
+return (
+  <div
+    className="
+      min-h-full
+      w-full
+      bg-[var(--color-background)]
+      px-3
+      py-5
 
-      <ActivityTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+      sm:px-4
+      md:px-6
+    "
+  >
+    <ActivityHeader />
+
+    <ActivityTabs
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    />
 {activeTab === "Guardrails" ? (
   <Guardrails />
 ) : activeTab === "Explore" ? (
   <ExploreTab />
 ) : activeTab === "Trends" ? (
- <div className="pt-5">
-    {/* ================= MODELS ================= */}
-    <div className="mb-4 flex items-center justify-between">
-      <h2 className="text-lg font-semibold text-[var(--color-text)]">
-        Models
-      </h2>
+<div className="w-full min-w-0 pt-5"> 
 
-      {/* Metric Dropdown */}
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() =>
-            setTrendDropdownOpen(!trendDropdownOpen)
-          }
+  <div
+    className="
+      mb-4
+      flex
+      items-center
+      justify-between
+      gap-3
+    "
+  >
+    <h2
+      className="
+        text-[var(--font-size-lg)]
+        font-semibold
+        text-[var(--color-text)]
+      "
+    >
+      Models
+    </h2>
+
+    {/* Metric Dropdown */}
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() =>
+          setTrendDropdownOpen(!trendDropdownOpen)
+        }
+        className="
+          flex
+          items-center
+          gap-2
+          rounded-lg
+          border
+          border-[var(--color-border)]
+          bg-[var(--color-surface)]
+          px-3
+          py-2
+          text-[var(--font-size-sm)]
+          text-[var(--color-text)]
+          sm:px-4
+        "
+      >
+        {trendMetric}
+
+        <ChevronDown
+          size={16}
+          className={`transition-transform ${
+            trendDropdownOpen
+              ? "rotate-180"
+              : ""
+          }`}
+        />
+      </button>
+
+      {trendDropdownOpen && (
+        <div
           className="
-            flex
-            items-center
-            gap-2
+            absolute
+            right-0
+            top-full
+            z-20
+            mt-2
+            w-32
+            overflow-hidden
             rounded-lg
             border
             border-[var(--color-border)]
             bg-[var(--color-surface)]
-            px-4
-            py-2
-            text-sm
-            text-[var(--color-text)]
+            p-1
+            shadow-lg
           "
         >
-          {trendMetric}
+          {(
+            ["Spend", "Requests", "Tokens"] as const
+          ).map((metric) => (
+            <button
+              key={metric}
+              type="button"
+              onClick={() => {
+                setTrendMetric(metric);
+                setTrendDropdownOpen(false);
+              }}
+              className={`
+                flex
+                w-full
+                items-center
+                rounded-md
+                px-3
+                py-2
+                text-left
+                text-[var(--font-size-sm)]
+                transition-colors
+                ${
+                  trendMetric === metric
+                    ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                    : "text-[var(--color-text)] hover:bg-[var(--color-muted)]"
+                }
+              `}
+            >
+              {metric}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
 
-          <ChevronDown
-            size={16}
-            className={`transition-transform ${
-              trendDropdownOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
+  {/* Mobile: 1 column */}
+  {/* Desktop: chart + trending side by side */}
+  <div
+    className="
+      grid
+      grid-cols-1
+      gap-3
+      lg:grid-cols-[2fr_1fr]
+    "
+  >
+    <TrendsChart
+      title={selectedTrendConfig.title}
+      data={selectedTrendConfig.data}
+      series={selectedTrendConfig.series}
+      type={trendChartType}
+    />
 
-        {trendDropdownOpen && (
-          <div
-            className="
-              absolute
-              right-0
-              top-full
-              z-20
-              mt-2
-              w-32
-              overflow-hidden
-              rounded-lg
-              border
-              border-[var(--color-border)]
-              bg-[var(--color-surface)]
-              p-1
-              shadow-lg
-            "
+    <TrendingCard
+      items={selectedTrendConfig.trendingItems}
+      onExplore={() => {
+        console.log(
+          `Explore ${trendMetric} trends`,
+        );
+      }}
+    />
+  </div>
+
+{/* ================= API KEYS ================= */}
+
+<div
+  className="
+    mb-4
+    mt-8
+    flex
+    w-full
+    items-center
+    justify-between
+    gap-3
+  "
+>
+  <h2
+    className="
+      text-[var(--font-size-lg)]
+      font-semibold
+      text-[var(--color-text)]
+    "
+  >
+    API Keys
+  </h2>
+
+  {/* API Keys Metric Dropdown */}
+  <div className="relative shrink-0">
+    <button
+      type="button"
+      onClick={() =>
+        setApiKeyTrendDropdownOpen(
+          !apiKeyTrendDropdownOpen,
+        )
+      }
+      className="
+        flex
+        items-center
+        gap-2
+        rounded-lg
+        border
+        border-[var(--color-border)]
+        bg-[var(--color-surface)]
+        px-3
+        py-2
+        text-[var(--font-size-sm)]
+        text-[var(--color-text)]
+        sm:px-4
+      "
+    >
+      {apiKeyTrendMetric}
+
+      <ChevronDown
+        size={16}
+        className={`transition-transform ${
+          apiKeyTrendDropdownOpen
+            ? "rotate-180"
+            : ""
+        }`}
+      />
+    </button>
+
+    {apiKeyTrendDropdownOpen && (
+      <div
+        className="
+          absolute
+          right-0
+          top-full
+          z-20
+          mt-2
+          w-32
+          overflow-hidden
+          rounded-lg
+          border
+          border-[var(--color-border)]
+          bg-[var(--color-surface)]
+          p-1
+          shadow-lg
+        "
+      >
+        {(
+          ["Spend", "Requests", "Tokens"] as const
+        ).map((metric) => (
+          <button
+            key={metric}
+            type="button"
+            onClick={() => {
+              setApiKeyTrendMetric(metric);
+              setApiKeyTrendDropdownOpen(false);
+            }}
+            className={`
+              flex
+              w-full
+              items-center
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-[var(--font-size-sm)]
+              transition-colors
+              ${
+                apiKeyTrendMetric === metric
+                  ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                  : "text-[var(--color-text)] hover:bg-[var(--color-muted)]"
+              }
+            `}
           >
-            {(["Spend", "Requests", "Tokens"] as const).map(
-              (metric) => (
-                <button
-                  key={metric}
-                  type="button"
-                  onClick={() => {
-                    setTrendMetric(metric);
-                    setTrendDropdownOpen(false);
-                  }}
-                  className={`
-                    flex
-                    w-full
-                    items-center
-                    rounded-md
-                    px-3
-                    py-2
-                    text-left
-                    text-sm
-                    transition-colors
-                    ${
-                      trendMetric === metric
-                        ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
-                        : "text-[var(--color-text)] hover:bg-[var(--color-muted)]"
-                    }
-                  `}
-                >
-                  {metric}
-                </button>
-              ),
-            )}
-          </div>
-        )}
+            {metric}
+          </button>
+        ))}
       </div>
-    </div>
+    )}
+  </div>
+</div>
 
-    <div className="grid grid-cols-[2fr_1fr] gap-3">
-      <TrendsChart
-        title={selectedTrendConfig.title}
-        data={selectedTrendConfig.data}
-        series={selectedTrendConfig.series}
-        type={trendChartType}
-      />
+{/* Mobile: stacked */}
+{/* Desktop: chart + trending side by side */}
 
-      <TrendingCard
-        items={selectedTrendConfig.trendingItems}
-        onExplore={() => {
-          console.log(`Explore ${trendMetric} trends`);
-        }}
-      />
-    </div>
+<div
+  className="
+    grid
+    w-full
+    min-w-0
+    grid-cols-1
+    gap-3
+    lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]
+  "
+>
+  <div className="min-w-0">
+    <TrendsChart
+      title={selectedApiKeyTrendConfig.title}
+      data={selectedApiKeyTrendConfig.data}
+      series={selectedApiKeyTrendConfig.series}
+      type={trendChartType}
+    />
+  </div>
 
-    {/* ================= API KEYS ================= */}
-    <div className="mb-4 mt-8 flex items-center justify-between">
-      <h2 className="text-lg font-semibold text-[var(--color-text)]">
-        API Keys
-      </h2>
-
-      {/* API Keys Metric Dropdown */}
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() =>
-            setApiKeyTrendDropdownOpen(
-              !apiKeyTrendDropdownOpen,
-            )
-          }
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-lg
-            border
-            border-[var(--color-border)]
-            bg-[var(--color-surface)]
-            px-4
-            py-2
-            text-sm
-            text-[var(--color-text)]
-          "
-        >
-          {apiKeyTrendMetric}
-
-          <ChevronDown
-            size={16}
-            className={`transition-transform ${
-              apiKeyTrendDropdownOpen
-                ? "rotate-180"
-                : ""
-            }`}
-          />
-        </button>
-
-        {apiKeyTrendDropdownOpen && (
-          <div
-            className="
-              absolute
-              right-0
-              top-full
-              z-20
-              mt-2
-              w-32
-              overflow-hidden
-              rounded-lg
-              border
-              border-[var(--color-border)]
-              bg-[var(--color-surface)]
-              p-1
-              shadow-lg
-            "
-          >
-            {(["Spend", "Requests", "Tokens"] as const).map(
-              (metric) => (
-                <button
-                  key={metric}
-                  type="button"
-                  onClick={() => {
-                    setApiKeyTrendMetric(metric);
-                    setApiKeyTrendDropdownOpen(false);
-                  }}
-                  className={`
-                    flex
-                    w-full
-                    items-center
-                    rounded-md
-                    px-3
-                    py-2
-                    text-left
-                    text-sm
-                    transition-colors
-                    ${
-                      apiKeyTrendMetric === metric
-                        ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
-                        : "text-[var(--color-text)] hover:bg-[var(--color-muted)]"
-                    }
-                  `}
-                >
-                  {metric}
-                </button>
-              ),
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-
-    <div className="grid grid-cols-[2fr_1fr] gap-3">
-      <TrendsChart
-        title={selectedApiKeyTrendConfig.title}
-        data={selectedApiKeyTrendConfig.data}
-        series={selectedApiKeyTrendConfig.series}
-        type={trendChartType}
-      />
-
-      <TrendingCard
-        items={selectedApiKeyTrendConfig.trendingItems}
-        onExplore={() => {
-          console.log(
-            `Explore API Key ${apiKeyTrendMetric} trends`,
-          );
-        }}
-      />
-    </div>
+  <div className="min-w-0">
+    <TrendingCard
+      items={selectedApiKeyTrendConfig.trendingItems}
+      onExplore={() => {
+        console.log(
+          `Explore API Key ${apiKeyTrendMetric} trends`,
+        );
+      }}
+    />
+  </div>
+</div>
 
     {/* ================= APPS ================= */}
-<div className="mb-4 mt-8 flex items-center justify-between">
-  <h2 className="text-lg font-semibold text-[var(--color-text)]">
+{/* ================= APPS ================= */}
+
+<div
+  className="
+    mb-4
+    mt-8
+    flex
+    w-full
+    items-center
+    justify-between
+    gap-3
+  "
+>
+  <h2
+    className="
+      text-[var(--font-size-lg)]
+      font-semibold
+      text-[var(--color-text)]
+    "
+  >
     Apps
   </h2>
 
   {/* Apps Metric Dropdown */}
-  <div className="relative">
+  <div className="relative shrink-0">
     <button
       type="button"
       onClick={() =>
@@ -501,10 +585,11 @@ const [trendDropdownOpen, setTrendDropdownOpen] = useState(false);
         border
         border-[var(--color-border)]
         bg-[var(--color-surface)]
-        px-4
+        px-3
         py-2
-        text-sm
+        text-[var(--font-size-sm)]
         text-[var(--color-text)]
+        sm:px-4
       "
     >
       {appTrendMetric}
@@ -537,63 +622,90 @@ const [trendDropdownOpen, setTrendDropdownOpen] = useState(false);
           shadow-lg
         "
       >
-        {(["Spend", "Requests", "Tokens"] as const).map(
-          (metric) => (
-            <button
-              key={metric}
-              type="button"
-              onClick={() => {
-                setAppTrendMetric(metric);
-                setAppTrendDropdownOpen(false);
-              }}
-              className={`
-                flex
-                w-full
-                items-center
-                rounded-md
-                px-3
-                py-2
-                text-left
-                text-sm
-                transition-colors
-                ${
-                  appTrendMetric === metric
-                    ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
-                    : "text-[var(--color-text)] hover:bg-[var(--color-muted)]"
-                }
-              `}
-            >
-              {metric}
-            </button>
-          ),
-        )}
+        {(
+          ["Spend", "Requests", "Tokens"] as const
+        ).map((metric) => (
+          <button
+            key={metric}
+            type="button"
+            onClick={() => {
+              setAppTrendMetric(metric);
+              setAppTrendDropdownOpen(false);
+            }}
+            className={`
+              flex
+              w-full
+              items-center
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-[var(--font-size-sm)]
+              transition-colors
+              ${
+                appTrendMetric === metric
+                  ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+                  : "text-[var(--color-text)] hover:bg-[var(--color-muted)]"
+              }
+            `}
+          >
+            {metric}
+          </button>
+        ))}
       </div>
     )}
   </div>
 </div>
 
-<div className="grid grid-cols-[2fr_1fr] gap-3">
-  <TrendsChart
-    title={selectedAppTrendConfig.title}
-    data={selectedAppTrendConfig.data}
-    series={selectedAppTrendConfig.series}
-    type={trendChartType}
-  />
+{/* Mobile: stacked */}
+{/* Large screens: chart + trending side by side */}
 
-  <TrendingCard
-    items={selectedAppTrendConfig.trendingItems}
-    onExplore={() => {
-      console.log(
-        `Explore App ${appTrendMetric} trends`,
-      );
-    }}
-  />
+<div
+  className="
+    grid
+    w-full
+    min-w-0
+    grid-cols-1
+    gap-3
+    lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]
+  "
+>
+  <div className="min-w-0">
+    <TrendsChart
+      title={selectedAppTrendConfig.title}
+      data={selectedAppTrendConfig.data}
+      series={selectedAppTrendConfig.series}
+      type={trendChartType}
+    />
+  </div>
+
+  <div className="min-w-0">
+    <TrendingCard
+      items={selectedAppTrendConfig.trendingItems}
+      onExplore={() => {
+        console.log(
+          `Explore App ${appTrendMetric} trends`,
+        );
+      }}
+    />
+  </div>
 </div>
   </div>
 
 ) : (
   <>
-      <div className="grid grid-cols-5 gap-3">
+     <div
+  className="
+    mt-5
+    grid
+    grid-cols-1
+    gap-3
+
+    md:grid-cols-2
+    lg:grid-cols-3
+    xl:grid-cols-5
+  "
+>
         <ActivityMetricCard
           title="Total spend"
           value="$0.00"
@@ -634,27 +746,36 @@ const [trendDropdownOpen, setTrendDropdownOpen] = useState(false);
           onHoverChange={setBlendedHoveredIndex}
         />
       </div>
-<div className="mt-4 grid grid-cols-2 gap-3">
-<TopInfoCard
-  title="Top API Keys"
-  rank="1"
-  name="api builder"
-  subtitle="sk-or-v1-550...04a"
-  value="3K tok"
-  dotColor="#e88b8b"
-  onNameClick={() => setSelectedItem("api builder")}
-  isMenuOpen={selectedItem === "api builder"}
-  onCloseMenu={() => setSelectedItem(null)}
-/>
+<div
+  className="
+    mt-4
+    grid
+    grid-cols-1
+    gap-3
 
-<TopInfoCard
-  title="Top Apps"
-  rank="1"
-  name="Unknown"
-  value="3K tok"
-  icon="U"
-  onNameClick={() => setSelectedItem("Unknown")}
-/>
+    md:grid-cols-2
+  "
+>
+  <TopInfoCard
+    title="Top API Keys"
+    rank="1"
+    name="api builder"
+    subtitle="sk-or-v1-550...04a"
+    value="3K tok"
+    dotColor="#e88b8b"
+    onNameClick={() => setSelectedItem("api builder")}
+    isMenuOpen={selectedItem === "api builder"}
+    onCloseMenu={() => setSelectedItem(null)}
+  />
+
+  <TopInfoCard
+    title="Top Apps"
+    rank="1"
+    name="Unknown"
+    value="3K tok"
+    icon="U"
+    onNameClick={() => setSelectedItem("Unknown")}
+  />
 {selectedItem === "Unknown" && (
   <UnknownDetailsPanel
     onClose={() => setSelectedItem(null)}
@@ -685,7 +806,7 @@ const [trendDropdownOpen, setTrendDropdownOpen] = useState(false);
 
         <button
           className="
-            text-[length:var(--font-size-sm)]
+            text-[length:var(--font-size-base)]
             text-[var(--color-text)]
             underline
           "

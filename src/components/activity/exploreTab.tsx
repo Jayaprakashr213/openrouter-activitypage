@@ -72,210 +72,287 @@ const [selectedLimit, setSelectedLimit] = useState("10");
 const [selectedRankBy, setSelectedRankBy] = useState("Requests");
   return (
     <div className="w-full">
-      {/* FILTER BAR */}
-     <div className="mt-5 flex items-center gap-2 border-b border-[var(--color-border)] pb-2">
-  {/* =========================================
-      METRIC + BY + MODEL + SUBGROUP
-  ========================================= */}
-{/* =========================================
-    METRIC + BY + MODEL + SUBGROUP
-========================================= */}
+{/* FILTER BAR */}
 <div
   className="
-    flex h-8 items-center
-    rounded-lg
-    border border-[var(--color-border)]
-    bg-[var(--color-surface)]
-    overflow-visible
+    mt-5
+    flex
+    flex-wrap
+    items-start
+    gap-2
+    border-b
+    border-[var(--color-border)]
+    pb-2
+    sm:items-center
   "
 >
   {/* =========================================
-      METRIC
+      METRIC + BY + MODEL + SUBGROUP
   ========================================= */}
-  <ActivityDropdown
-    value={selectedMetric}
-    options={metricOptions}
-    placeholder="Metric"
-    onChange={(value) => {
-      setSelectedMetric(value);
-      setActiveDropdown(null);
-    }}
-    width="220px"
-    showSelectedDot
-    isOpen={activeDropdown === "metric"}
-    onToggle={() =>
-      setActiveDropdown(
-        activeDropdown === "metric" ? null : "metric"
-      )
-    }
-  />
+<div className="w-full lg:w-auto">
+ <div
+  className="
+    flex
+    h-8
+    w-full
+    items-center
+    overflow-visible
+    rounded-lg
+    border
+    border-[var(--color-border)]
+    bg-[var(--color-surface)]
+    lg:w-fit
+  "
+>
+      {/* =========================================
+          METRIC
+      ========================================= */}
+    <ActivityDropdown
+  value={selectedMetric}
+  options={metricOptions}
+  placeholder="Metric"
+  onChange={(value) => {
+    setSelectedMetric(value);
+    setActiveDropdown(null);
+  }}
+  className="flex-1"
+  triggerClassName="w-full justify-between"
+  showSelectedDot
+  isOpen={activeDropdown === "metric"}
+  onToggle={() =>
+    setActiveDropdown(
+      activeDropdown === "metric"
+        ? null
+        : "metric",
+    )
+  }
+/>
 
-  {/* =========================================
-      BY
-  ========================================= */}
-  <div
-    className="
-      flex h-full items-center
-      border-l border-[var(--color-border)]
-      bg-[var(--color-surface-secondary)]
-      px-3
-      text-[length:var(--font-size-base)]
-      text-[var(--color-text-secondary)]
-    "
-  >
-    by
-  </div>
-
-  {/* =========================================
-      MODEL
-  ========================================= */}
-  <ActivityDropdown
-    value={selectedModel}
-    options={modelOptions}
-    placeholder="Model"
-    onChange={(value) => {
-      setSelectedModel(value);
-      setActiveDropdown(null);
-    }}
-    width="220px"
-    className="border-l border-[var(--color-border)]"
-    isOpen={activeDropdown === "model"}
-    onToggle={() =>
-      setActiveDropdown(
-        activeDropdown === "model" ? null : "model"
-      )
-    }
-  />
-
-  {/* =========================================
-      SUBGROUP
-  ========================================= */}
-  <ActivityDropdown
-    value={selectedSubgroup}
-    options={subgroupOptions}
-    placeholder="Subgroup"
-    onChange={(value) => {
-      setSelectedSubgroup(value);
-      setActiveDropdown(null);
-    }}
-    width="220px"
-    className="border-l border-[var(--color-border)]"
-    showPlus
-    isOpen={activeDropdown === "subgroup"}
-    onToggle={() =>
-      setActiveDropdown(
-        activeDropdown === "subgroup" ? null : "subgroup"
-      )
-    }
-  />
-</div>
-
-<div className="flex items-center gap-2">
-  {/* =========================================
-      ROLLUP
-  ========================================= */}
-  <div className="relative">
-    <button
-      onClick={() =>
-        setActiveDropdown(
-          activeDropdown === "rollup" ? null : "rollup"
-        )
-      }
-      className="
-        flex h-8 items-center gap-1.5
-        rounded-lg
-        border border-[var(--color-border)]
-        bg-[var(--color-surface)]
-        px-3
-        text-[length:var(--font-size-base)]
-        text-[var(--color-text)]
-        hover:bg-[var(--color-surface-secondary)]
-      "
-    >
-      <span className="text-[var(--color-text-secondary)]">
-        Rollup:
-      </span>
-
-      <span className="font-medium">
-        {selectedRollup}
-      </span>
-
-      <ChevronDown size={15} />
-    </button>
-
-    {activeDropdown === "rollup" && (
+      {/* =========================================
+          BY
+      ========================================= */}
       <div
         className="
-          absolute left-0 top-[calc(100%+4px)] z-30
-          mt-1
-          min-w-[120px]
-          overflow-hidden
-          rounded-lg
-          border border-[var(--color-border)]
-          bg-[var(--color-surface)]
-          shadow-lg
+          flex
+          h-full
+          shrink-0
+          items-center
+          border-l
+          border-[var(--color-border)]
+          bg-[var(--color-surface-secondary)]
+          px-2
+          text-[length:var(--font-size-base)]
+          text-[var(--color-text-secondary)]
+          sm:px-3
         "
       >
-        <div className="py-1">
-          {rollupOptions.map((item) => (
-            <button
-              key={item}
-              onClick={() => {
-                setSelectedRollup(item);
-                setActiveDropdown(null);
-              }}
-              className={`
-                flex w-full items-center justify-between
-                px-3 py-2
-                text-left
-                text-[length:var(--font-size-base)]
-                hover:bg-[var(--color-surface-secondary)]
-                ${
-                  selectedRollup === item
-                    ? "text-[var(--color-primary)]"
-                    : "text-[var(--color-text)]"
-                }
-              `}
-            >
-              {item}
-
-              {selectedRollup === item && (
-                <span className="h-2 w-2 rounded-full bg-[var(--color-primary)]" />
-              )}
-            </button>
-          ))}
-        </div>
+        by
       </div>
-    )}
+
+      {/* =========================================
+          MODEL
+      ========================================= */}
+    <ActivityDropdown
+  value={selectedModel}
+  options={modelOptions}
+  placeholder="Model"
+  onChange={(value) => {
+    setSelectedModel(value);
+    setActiveDropdown(null);
+  }}
+  className="
+    border-l
+    border-[var(--color-border)]
+  "
+  dropdownAlign="right"
+  isOpen={activeDropdown === "model"}
+  onToggle={() =>
+    setActiveDropdown(
+      activeDropdown === "model"
+        ? null
+        : "model",
+    )
+  }
+/>
+
+      {/* =========================================
+          SUBGROUP
+      ========================================= */}
+      <ActivityDropdown
+        value={selectedSubgroup}
+        options={subgroupOptions}
+        placeholder="Subgroup"
+        onChange={(value) => {
+          setSelectedSubgroup(value);
+          setActiveDropdown(null);
+        }}
+        className="
+          border-l
+          border-[var(--color-border)]
+        "
+        showPlus
+          dropdownAlign="right"
+        isOpen={activeDropdown === "subgroup"}
+        onToggle={() =>
+          setActiveDropdown(
+            activeDropdown === "subgroup"
+              ? null
+              : "subgroup",
+          )
+        }
+      />
+    </div>
   </div>
+
+  {/* =========================================
+      SECONDARY FILTERS
+  ========================================= */}
+<div 
+  className=" 
+    flex 
+    w-full 
+    flex-nowrap 
+    items-center 
+    gap-2 
+    overflow-visible
+    lg:w-auto 
+  " 
+>
+    {/* =========================================
+        ROLLUP
+    ========================================= */}
+    <div className="relative">
+      <button
+        onClick={() =>
+          setActiveDropdown(
+            activeDropdown === "rollup"
+              ? null
+              : "rollup",
+          )
+        }
+        className="
+    flex h-8 shrink-0 items-center gap-1
+    rounded-lg
+    border border-[var(--color-border)]
+    bg-[var(--color-surface)]
+    px-2
+    text-[length:var(--font-size-base)]
+    text-[var(--color-text)]
+    sm:gap-1.5
+    sm:px-3
+  "
+      >
+        <span className="text-[var(--color-text-secondary)]">
+          Rollup:
+        </span>
+
+        <span className="font-medium">
+          {selectedRollup}
+        </span>
+
+        <ChevronDown
+          size={15}
+          className="shrink-0"
+        />
+      </button>
+
+      {activeDropdown === "rollup" && (
+        <div
+          className="
+            absolute
+            left-0
+            top-[calc(100%+4px)]
+            z-30
+            mt-1
+            min-w-[120px]
+            overflow-hidden
+            rounded-lg
+            border
+            border-[var(--color-border)]
+            bg-[var(--color-surface)]
+            shadow-lg
+          "
+        >
+          <div className="py-1">
+            {rollupOptions.map((item) => (
+              <button
+                key={item}
+                onClick={() => {
+                  setSelectedRollup(item);
+                  setActiveDropdown(null);
+                }}
+                className={`
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+                  px-3
+                  py-2
+                  text-left
+                  text-[length:var(--font-size-base)]
+                  hover:bg-[var(--color-surface-secondary)]
+                  ${
+                    selectedRollup === item
+                      ? "text-[var(--color-primary)]"
+                      : "text-[var(--color-text)]"
+                  }
+                `}
+              >
+                {item}
+
+                {selectedRollup === item && (
+                  <span
+                    className="
+                      h-2
+                      w-2
+                      rounded-full
+                      bg-[var(--color-primary)]
+                    "
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
+ 
 
   {/* =========================================
       TOP + NUMBER + RANK BY
   ========================================= */}
-  <div
-    className="
-      flex h-8 items-center
-      overflow-visible
-      rounded-lg
-      border border-[var(--color-border)]
-      bg-[var(--color-surface)]
-    "
-  >
+<div
+  className="
+    flex
+    h-8
+    min-w-0
+    flex-1
+    items-center
+    overflow-visible
+    rounded-lg
+    border
+    border-[var(--color-border)]
+    bg-[var(--color-surface)]
+  "
+>
     {/* TOP / BOTTOM */}
-    <div className="relative h-full">
+    <div className="relative h-full shrink-0">
       <button
         onClick={() =>
           setActiveDropdown(
             activeDropdown === "top" ? null : "top"
           )
         }
-        className="
-          flex h-full items-center gap-2
-          px-3
-          text-[length:var(--font-size-base)]
-          text-[var(--color-text)]
-          hover:bg-[var(--color-surface-secondary)]
-        "
+     className="
+  flex h-full items-center gap-1.5
+  px-2
+  text-[length:var(--font-size-base)]
+  text-[var(--color-text)]
+  hover:bg-[var(--color-surface-secondary)]
+  sm:gap-2
+  sm:px-3
+"
       >
         <span
           className={
@@ -337,20 +414,22 @@ const [selectedRankBy, setSelectedRankBy] = useState("Requests");
     </div>
 
     {/* NUMBER */}
-    <div className="relative h-full border-l border-[var(--color-border)]">
+   <div className="relative h-full shrink-0 border-l border-[var(--color-border)]">
       <button
         onClick={() =>
           setActiveDropdown(
             activeDropdown === "limit" ? null : "limit"
           )
         }
-        className="
-          flex h-full items-center gap-2
-          px-3
-          text-[length:var(--font-size-base)]
-          text-[var(--color-text)]
-          hover:bg-[var(--color-surface-secondary)]
-        "
+    className="
+  flex h-full items-center gap-1.5
+  px-2
+  text-[length:var(--font-size-base)]
+  text-[var(--color-text)]
+  hover:bg-[var(--color-surface-secondary)]
+  sm:gap-2
+  sm:px-3
+"
       >
         {selectedLimit}
 
@@ -404,45 +483,84 @@ const [selectedRankBy, setSelectedRankBy] = useState("Requests");
     </div>
 
     {/* RANK BY */}
-    <div className="relative h-full border-l border-[var(--color-border)]">
-      <button
-        onClick={() =>
-          setActiveDropdown(
-            activeDropdown === "rank" ? null : "rank"
-          )
-        }
-        className="
-          flex h-full items-center gap-2
-          px-3
-          text-[length:var(--font-size-base)]
-          text-[var(--color-text)]
-          hover:bg-[var(--color-surface-secondary)]
-        "
-      >
-        <span className="text-[var(--color-text-secondary)]">
-          Rank by:
-        </span>
+   <div
+  className="
+    relative
+    h-full
+    min-w-0
+    flex-1
+    border-l
+    border-[var(--color-border)]
+  "
+>
+  <button
+    onClick={() =>
+      setActiveDropdown(
+        activeDropdown === "rank" ? null : "rank"
+      )
+    }
+    className="
+      flex
+      h-full
+      w-full
+      min-w-0
+      items-center
+      gap-1.5
+      px-2
+      text-[length:var(--font-size-base)]
+      text-[var(--color-text)]
+      hover:bg-[var(--color-surface-secondary)]
+      sm:gap-2
+      sm:px-3
+    "
+  >
+    {/* Hide label on mobile to save space */}
+    <span
+      className="
+        hidden
+        shrink-0
+        text-[var(--color-text-secondary)]
+        sm:inline
+      "
+    >
+      Rank by:
+    </span>
 
-        <span className="font-medium">
-          {selectedRankBy}
-        </span>
+    <span
+      className="
+        min-w-0
+        flex-1
+        truncate
+        text-left
+        font-medium
+      "
+    >
+      {selectedRankBy}
+    </span>
 
-        <ChevronDown size={15} />
-      </button>
+    <ChevronDown
+      size={14}
+      className="shrink-0"
+    />
+  </button>
 
-      {activeDropdown === "rank" && (
-        <div
-          className="
-            absolute left-0 top-[calc(100%+4px)] z-30
-            mt-1
-            min-w-[200px]
-            overflow-hidden
-            rounded-lg
-            border border-[var(--color-border)]
-            bg-[var(--color-surface)]
-            shadow-lg
-          "
-        >
+  {activeDropdown === "rank" && (
+    <div
+      className="
+        absolute
+        right-0
+        top-[calc(100%+4px)]
+        z-30
+        mt-1
+        min-w-[180px]
+        overflow-hidden
+        rounded-lg
+        border
+        border-[var(--color-border)]
+        bg-[var(--color-surface)]
+        shadow-lg
+      "
+    >
           <div className="max-h-[260px] overflow-y-auto py-1">
             {rankByOptions.map((item) => (
               <button
@@ -529,71 +647,144 @@ const [selectedRankBy, setSelectedRankBy] = useState("Requests");
         </div>
 
         {/* LEGEND */}
-        <div className="mt-3 flex flex-wrap items-center gap-6">
-          {modelUsageData.map((model) => (
-            <div
-              key={model.name}
-              className="flex items-center gap-2 text-sm text-[var(--color-text)]"
-            >
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: model.color }}
-              />
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3 sm:gap-6">
+  {modelUsageData.map((model) => (
+    <div
+      key={model.name}
+      className="
+        flex
+        items-center
+        gap-2
+        text-[length:var(--font-size-sm)]
+        text-[var(--color-text)]
+        sm:text-[length:var(--font-size-base)]
+      "
+    >
+      <span
+        className="h-2.5 w-2.5 shrink-0 rounded-full"
+        style={{ backgroundColor: model.color }}
+      />
 
-              {model.name}
-            </div>
-          ))}
-        </div>
+      <span className="whitespace-nowrap">
+        {model.name}
+      </span>
+    </div>
+  ))}
+</div>
       </div>
 
       {/* TABLE */}
-      <div className="mt-6 overflow-hidden">
-        <div className="grid grid-cols-[1fr_150px_180px] border-b border-[var(--color-border)] px-3 py-3 text-sm text-[var(--color-text-secondary)]">
-          <div>Model ↕</div>
+    {/* TABLE */}
+<div className="mt-5 overflow-hidden sm:mt-6">
 
-          <div className="text-right">
-            ↕ Value
-          </div>
+  {/* HEADER */}
+  <div
+    className="
+      grid
+      grid-cols-[minmax(0,1fr)_70px_100px]
+      border-b
+      border-[var(--color-border)]
+      px-2
+      py-3
+      text-[length:var(--font-size-sm)]
+      text-[var(--color-text-secondary)]
 
-          <div className="text-right">
-            ↕ % of Total
-          </div>
+      sm:grid-cols-[minmax(0,1fr)_110px_140px]
+      sm:px-3
+      sm:text-[length:var(--font-size-base)]
+
+      lg:grid-cols-[minmax(0,1fr)_150px_180px]
+    "
+  >
+    <div>Model ↕</div>
+
+    <div className="text-right">
+      ↕ Value
+    </div>
+
+    <div className="text-right">
+      <span className="sm:hidden">
+        ↕ %
+      </span>
+
+      <span className="hidden sm:inline">
+        ↕ % of Total
+      </span>
+    </div>
+  </div>
+
+  {/* ROWS */}
+  {modelUsageData.map((model) => (
+    <div
+      key={model.name}
+      className="
+        grid
+        grid-cols-[minmax(0,1fr)_70px_100px]
+        items-center
+        border-b
+        border-[var(--color-border)]
+        px-2
+        py-3
+        text-[length:var(--font-size-sm)]
+        text-[var(--color-text)]
+
+        sm:grid-cols-[minmax(0,1fr)_110px_140px]
+        sm:px-3
+        sm:text-[length:var(--font-size-base)]
+
+        lg:grid-cols-[minmax(0,1fr)_150px_180px]
+      "
+    >
+      {/* MODEL */}
+      <div className="flex min-w-0 items-center gap-2">
+        <span
+          className="
+            h-2
+            w-2
+            shrink-0
+            rounded-full
+            sm:h-2.5
+            sm:w-2.5
+          "
+          style={{
+            backgroundColor: model.color,
+          }}
+        />
+
+        <span className="truncate">
+          {model.name}
+        </span>
+      </div>
+
+      {/* VALUE */}
+      <div className="text-right whitespace-nowrap">
+        $0
+      </div>
+
+      {/* PERCENTAGE */}
+      <div className="flex items-center justify-end gap-2 sm:gap-3">
+        <div
+          className="
+            h-2
+            w-10
+            shrink-0
+            overflow-hidden
+            rounded-full
+            bg-[var(--color-surface-secondary)]
+
+            sm:w-16
+          "
+        >
+          <div className="h-full w-0" />
         </div>
 
-        {modelUsageData.map((model) => (
-          <div
-            key={model.name}
-            className="
-              grid grid-cols-[1fr_150px_180px]
-              border-b border-[var(--color-border)]
-              px-3 py-3
-              text-sm
-              text-[var(--color-text)]
-            "
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: model.color }}
-              />
-
-              {model.name}
-            </div>
-
-            <div className="text-right">
-              $0
-            </div>
-
-            <div className="flex items-center justify-end gap-3">
-              <div className="h-2 w-16 overflow-hidden rounded-full bg-[var(--color-surface-secondary)]">
-                <div className="h-full w-0" />
-              </div>
-
-              0.0%
-            </div>
-          </div>
-        ))}
+        <span className="hidden whitespace-nowrap sm:inline">
+          0.0%
+        </span>
       </div>
+    </div>
+  ))}
+</div>
 
       {/* FOOTER */}
       <div className="mt-4 text-sm text-[var(--color-text-secondary)]">

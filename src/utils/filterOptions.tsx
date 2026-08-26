@@ -1,3 +1,22 @@
+import {
+  LayoutGrid,
+  KeyRound,
+  ShieldCheck,
+  Database,
+  ArrowRightLeft,
+  SlidersHorizontal,
+  Puzzle,
+  Eye,
+  Tag,
+  Settings,
+  User,
+  Activity,
+  List,
+  CreditCard,
+  LockKeyhole,
+  Shield,
+} from "lucide-react";
+
 export const subgroupOptions = [
   "Variant",
   "API Key",
@@ -66,31 +85,36 @@ export const generatePastMonthData = (
     };
   });
 };
-
 export function LegendItem({
   color,
   label,
   isActive,
   onClick,
+  isBottomLegend = false,
 }: {
   color: string;
   label: string;
   isActive: boolean;
   onClick: () => void;
+  isBottomLegend?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="
+      className={`
         flex
         cursor-pointer
         items-center
         gap-2
         bg-transparent
         p-0
-        text-[length:var(--font-size-sm)]
-      "
+        ${
+          isBottomLegend
+            ? "text-[11px] sm:text-[length:var(--font-size-sm)]"
+            : "text-[length:var(--font-size-sm)]"
+        }
+      `}
     >
       <span
         className="
@@ -118,6 +142,17 @@ export function LegendItem({
     </button>
   );
 }
+export const navItems = [
+  "Home",
+  "Models",
+  "Benchmarks",
+  "Chat",
+  "Rankings",
+  "Apps",
+  "Enterprise",
+  "Docs",
+];
+
 export const metricOptions = [
   "Request Count",
   "Total Usage ($)",
@@ -251,98 +286,135 @@ export const rankByOptions = [
   "Tokens (Prompt)",
   "Tokens (Completion)",
 ];
-export const modelTrendData = [
+
+export const mainItems = [
   {
-    date: "27 Jul",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Overview",
+    icon: LayoutGrid,
   },
   {
-    date: "29 Jul",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "API Keys",
+    icon: KeyRound,
   },
   {
-    date: "31 Jul",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Guardrails",
+    icon: ShieldCheck,
   },
   {
-    date: "2 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "BYOK",
+    icon: Database,
   },
   {
-    date: "4 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Routing",
+    icon: ArrowRightLeft,
   },
   {
-    date: "6 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Presets",
+    icon: SlidersHorizontal,
   },
   {
-    date: "8 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Plugins",
+    icon: Puzzle,
   },
   {
-    date: "10 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Observability",
+    icon: Eye,
   },
   {
-    date: "12 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Classifiers",
+    icon: Tag,
+    badge: "Beta",
   },
   {
-    date: "14 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Settings",
+    icon: Settings,
+  },
+];
+
+export const accountItems = [
+  {
+    label: "Profile",
+    icon: User,
   },
   {
-    date: "16 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Activity",
+    icon: Activity,
   },
   {
-    date: "18 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Logs",
+    icon: List,
   },
   {
-    date: "20 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
+    label: "Credits",
+    icon: CreditCard,
   },
   {
-    date: "22 Aug",
+    label: "Management Keys",
+    icon: KeyRound,
+  },
+  {
+    label: "Privacy",
+    icon: LockKeyhole,
+  },
+  {
+    label: "Preferences",
+    icon: Shield,
+  },
+];
+export const commonTrendDates = [
+  "26 Jul",
+  "27 Jul",
+  "28 Jul",
+  "29 Jul",
+  "30 Jul",
+  "31 Jul",
+  "1 Aug",
+  "2 Aug",
+  "3 Aug",
+  "4 Aug",
+  "5 Aug",
+  "6 Aug",
+  "7 Aug",
+  "8 Aug",
+  "9 Aug",
+  "10 Aug",
+  "11 Aug",
+  "12 Aug",
+  "13 Aug",
+  "14 Aug",
+  "15 Aug",
+  "16 Aug",
+  "17 Aug",
+  "18 Aug",
+  "19 Aug",
+  "20 Aug",
+  "21 Aug",
+  "22 Aug",
+  "23 Aug",
+  "24 Aug",
+];
+const createTrendData = <T extends Record<string, number>>(
+  values: Record<string, Partial<T>>,
+) => {
+  return commonTrendDates.map(
+    (date): { date: string } & Partial<T> => ({
+      date,
+      ...(values[date] ?? {}),
+    }),
+  );
+};
+export const modelTrendData = createTrendData({
+  "22 Aug": {
     gpt: 1,
     nemotron9b: 1,
     nemotron3: 1,
   },
-  {
-    date: "24 Aug",
-    gpt: 0,
-    nemotron9b: 0,
-    nemotron3: 0,
-  },
-];
+}).map((item) => ({
+  date: item.date,
+  gpt: item.gpt ?? 0,
+  nemotron9b: item.nemotron9b ?? 0,
+  nemotron3: item.nemotron3 ?? 0,
+}));
 
 export const modelTrendSeries = [
   {
@@ -361,29 +433,18 @@ export const modelTrendSeries = [
     color: "var(--color-chart-nemotron-3)",
   },
 ];
-export const modelTokenTrendData = [
-  { date: "27 Jul", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "29 Jul", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "31 Jul", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "2 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "4 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "6 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "8 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "10 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "12 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "14 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "16 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "18 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "20 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  {
-    date: "22 Aug",
+export const modelTokenTrendData = createTrendData({
+  "22 Aug": {
     gpt: 450,
     nemotron9b: 1400,
     nemotron3: 1150,
   },
-  { date: "24 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-];
-
+}).map((item) => ({
+  date: item.date,
+  gpt: item.gpt ?? 0,
+  nemotron9b: item.nemotron9b ?? 0,
+  nemotron3: item.nemotron3 ?? 0,
+}));
 export const modelTokenTrendSeries = [
   {
     key: "gpt",
@@ -401,23 +462,18 @@ export const modelTokenTrendSeries = [
     color: "#1f9d7a",
   },
 ];
-export const modelSpendTrendData = [
-  { date: "27 Jul", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "29 Jul", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "31 Jul", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "2 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "4 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "6 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "8 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "10 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "12 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "14 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "16 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "18 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "20 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-  { date: "22 Aug", gpt: 0.001, nemotron9b: 0.003, nemotron3: 0.001 },
-  { date: "24 Aug", gpt: 0, nemotron9b: 0, nemotron3: 0 },
-];
+export const modelSpendTrendData = createTrendData({
+  "22 Aug": {
+    gpt: 0.001,
+    nemotron9b: 0.003,
+    nemotron3: 0.001,
+  },
+}).map((item) => ({
+  date: item.date,
+  gpt: item.gpt ?? 0,
+  nemotron9b: item.nemotron9b ?? 0,
+  nemotron3: item.nemotron3 ?? 0,
+}));
 
 export const modelSpendTrendSeries = [
   {
@@ -436,38 +492,12 @@ export const modelSpendTrendSeries = [
     color: "#1f9d7a",
   },
 ];
-export const apiKeyRequestTrendData = [
-  { date: "26 Jul", apiBuilder: 0 },
-  { date: "27 Jul", apiBuilder: 0 },
-  { date: "28 Jul", apiBuilder: 0 },
-  { date: "29 Jul", apiBuilder: 0 },
-  { date: "30 Jul", apiBuilder: 0 },
-  { date: "31 Jul", apiBuilder: 0 },
-  { date: "1 Aug", apiBuilder: 0 },
-  { date: "2 Aug", apiBuilder: 0 },
-  { date: "3 Aug", apiBuilder: 0 },
-  { date: "4 Aug", apiBuilder: 0 },
-  { date: "5 Aug", apiBuilder: 0 },
-  { date: "6 Aug", apiBuilder: 0 },
-  { date: "7 Aug", apiBuilder: 0 },
-  { date: "8 Aug", apiBuilder: 0 },
-  { date: "9 Aug", apiBuilder: 0 },
-  { date: "10 Aug", apiBuilder: 0 },
-  { date: "11 Aug", apiBuilder: 0 },
-  { date: "12 Aug", apiBuilder: 0 },
-  { date: "13 Aug", apiBuilder: 0 },
-  { date: "14 Aug", apiBuilder: 0 },
-  { date: "15 Aug", apiBuilder: 0 },
-  { date: "16 Aug", apiBuilder: 0 },
-  { date: "17 Aug", apiBuilder: 0 },
-  { date: "18 Aug", apiBuilder: 0 },
-  { date: "19 Aug", apiBuilder: 0 },
-  { date: "20 Aug", apiBuilder: 0 },
-  { date: "21 Aug", apiBuilder: 3 },
-  { date: "22 Aug", apiBuilder: 0 },
-  { date: "23 Aug", apiBuilder: 0 },
-  { date: "24 Aug", apiBuilder: 0 },
-];
+export const apiKeyRequestTrendData = commonTrendDates.map(
+  (date) => ({
+    date,
+    apiBuilder: date === "21 Aug" ? 1 : 0,
+  }),
+);
 
 export const apiKeyRequestTrendSeries = [
   {
@@ -476,38 +506,12 @@ export const apiKeyRequestTrendSeries = [
     color: "#f5a623",
   },
 ];
-export const apiKeyTokenTrendData = [
-  { date: "26 Jul", apiBuilder: 0 },
-  { date: "27 Jul", apiBuilder: 0 },
-  { date: "28 Jul", apiBuilder: 0 },
-  { date: "29 Jul", apiBuilder: 0 },
-  { date: "30 Jul", apiBuilder: 0 },
-  { date: "31 Jul", apiBuilder: 0 },
-  { date: "1 Aug", apiBuilder: 0 },
-  { date: "2 Aug", apiBuilder: 0 },
-  { date: "3 Aug", apiBuilder: 0 },
-  { date: "4 Aug", apiBuilder: 0 },
-  { date: "5 Aug", apiBuilder: 0 },
-  { date: "6 Aug", apiBuilder: 0 },
-  { date: "7 Aug", apiBuilder: 0 },
-  { date: "8 Aug", apiBuilder: 0 },
-  { date: "9 Aug", apiBuilder: 0 },
-  { date: "10 Aug", apiBuilder: 0 },
-  { date: "11 Aug", apiBuilder: 0 },
-  { date: "12 Aug", apiBuilder: 0 },
-  { date: "13 Aug", apiBuilder: 0 },
-  { date: "14 Aug", apiBuilder: 0 },
-  { date: "15 Aug", apiBuilder: 0 },
-  { date: "16 Aug", apiBuilder: 0 },
-  { date: "17 Aug", apiBuilder: 0 },
-  { date: "18 Aug", apiBuilder: 0 },
-  { date: "19 Aug", apiBuilder: 0 },
-  { date: "20 Aug", apiBuilder: 0 },
-  { date: "21 Aug", apiBuilder: 3000 },
-  { date: "22 Aug", apiBuilder: 0 },
-  { date: "23 Aug", apiBuilder: 0 },
-  { date: "24 Aug", apiBuilder: 0 },
-];
+export const apiKeyTokenTrendData = commonTrendDates.map(
+  (date) => ({
+    date,
+    apiBuilder: date === "21 Aug" ? 3000 : 0,
+  }),
+);
 
 export const apiKeyTokenTrendSeries = [
   {
@@ -516,38 +520,12 @@ export const apiKeyTokenTrendSeries = [
     color: "#f5a623",
   },
 ];
-export const apiKeySpendTrendData = [
-  { date: "26 Jul", apiBuilder: 0 },
-  { date: "27 Jul", apiBuilder: 0 },
-  { date: "28 Jul", apiBuilder: 0 },
-  { date: "29 Jul", apiBuilder: 0 },
-  { date: "30 Jul", apiBuilder: 0 },
-  { date: "31 Jul", apiBuilder: 0 },
-  { date: "1 Aug", apiBuilder: 0 },
-  { date: "2 Aug", apiBuilder: 0 },
-  { date: "3 Aug", apiBuilder: 0 },
-  { date: "4 Aug", apiBuilder: 0 },
-  { date: "5 Aug", apiBuilder: 0 },
-  { date: "6 Aug", apiBuilder: 0 },
-  { date: "7 Aug", apiBuilder: 0 },
-  { date: "8 Aug", apiBuilder: 0 },
-  { date: "9 Aug", apiBuilder: 0 },
-  { date: "10 Aug", apiBuilder: 0 },
-  { date: "11 Aug", apiBuilder: 0 },
-  { date: "12 Aug", apiBuilder: 0 },
-  { date: "13 Aug", apiBuilder: 0 },
-  { date: "14 Aug", apiBuilder: 0 },
-  { date: "15 Aug", apiBuilder: 0 },
-  { date: "16 Aug", apiBuilder: 0 },
-  { date: "17 Aug", apiBuilder: 0 },
-  { date: "18 Aug", apiBuilder: 0 },
-  { date: "19 Aug", apiBuilder: 0 },
-  { date: "20 Aug", apiBuilder: 0 },
-  { date: "21 Aug", apiBuilder: 0.0008 },
-  { date: "22 Aug", apiBuilder: 0 },
-  { date: "23 Aug", apiBuilder: 0 },
-  { date: "24 Aug", apiBuilder: 0 },
-];
+export const apiKeySpendTrendData = commonTrendDates.map(
+  (date) => ({
+    date,
+    apiBuilder: date === "21 Aug" ? 0.0008 : 0,
+  }),
+);
 
 export const apiKeySpendTrendSeries = [
   {
@@ -557,25 +535,12 @@ export const apiKeySpendTrendSeries = [
   },
 ];
 
-// ================= APPS - SPEND =================
-
-export const appSpendTrendData = [
-  { date: "27 Jul", unknown: 0 },
-  { date: "29 Jul", unknown: 0 },
-  { date: "31 Jul", unknown: 0 },
-  { date: "2 Aug", unknown: 0 },
-  { date: "4 Aug", unknown: 0 },
-  { date: "6 Aug", unknown: 0 },
-  { date: "8 Aug", unknown: 0 },
-  { date: "10 Aug", unknown: 0 },
-  { date: "12 Aug", unknown: 0 },
-  { date: "14 Aug", unknown: 0 },
-  { date: "16 Aug", unknown: 0 },
-  { date: "18 Aug", unknown: 0 },
-  { date: "20 Aug", unknown: 0 },
-  { date: "22 Aug", unknown: 0 },
-  { date: "24 Aug", unknown: 0 },
-];
+export const appSpendTrendData = commonTrendDates.map(
+  (date) => ({
+    date,
+    unknown: 0,
+  }),
+);
 
 export const appSpendTrendSeries = [
   {
@@ -587,24 +552,12 @@ export const appSpendTrendSeries = [
 
 
 // ================= APPS - REQUESTS =================
-
-export const appRequestTrendData = [
-  { date: "27 Jul", unknown: 0 },
-  { date: "29 Jul", unknown: 0 },
-  { date: "31 Jul", unknown: 0 },
-  { date: "2 Aug", unknown: 0 },
-  { date: "4 Aug", unknown: 0 },
-  { date: "6 Aug", unknown: 0 },
-  { date: "8 Aug", unknown: 0 },
-  { date: "10 Aug", unknown: 0 },
-  { date: "12 Aug", unknown: 0 },
-  { date: "14 Aug", unknown: 0 },
-  { date: "16 Aug", unknown: 0 },
-  { date: "18 Aug", unknown: 0 },
-  { date: "20 Aug", unknown: 0 },
-  { date: "22 Aug", unknown: 3 },
-  { date: "24 Aug", unknown: 0 },
-];
+export const appRequestTrendData = commonTrendDates.map(
+  (date) => ({
+    date,
+    unknown: date === "22 Aug" ? 3 : 0,
+  }),
+);
 
 export const appRequestTrendSeries = [
   {
@@ -616,24 +569,12 @@ export const appRequestTrendSeries = [
 
 
 // ================= APPS - TOKENS =================
-
-export const appTokenTrendData = [
-  { date: "27 Jul", unknown: 0 },
-  { date: "29 Jul", unknown: 0 },
-  { date: "31 Jul", unknown: 0 },
-  { date: "2 Aug", unknown: 0 },
-  { date: "4 Aug", unknown: 0 },
-  { date: "6 Aug", unknown: 0 },
-  { date: "8 Aug", unknown: 0 },
-  { date: "10 Aug", unknown: 0 },
-  { date: "12 Aug", unknown: 0 },
-  { date: "14 Aug", unknown: 0 },
-  { date: "16 Aug", unknown: 0 },
-  { date: "18 Aug", unknown: 0 },
-  { date: "20 Aug", unknown: 0 },
-  { date: "22 Aug", unknown: 2900 },
-  { date: "24 Aug", unknown: 0 },
-];
+export const appTokenTrendData = commonTrendDates.map(
+  (date) => ({
+    date,
+    unknown: date === "22 Aug" ? 2900 : 0,
+  }),
+);
 
 export const appTokenTrendSeries = [
   {

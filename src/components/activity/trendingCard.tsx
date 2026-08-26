@@ -25,7 +25,7 @@ export function TrendingCard({
     <div className="flex h-full min-h-[240px] flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4">
-        <h3 className="text-lg font-semibold text-[var(--color-text)]">
+        <h3 className="text-lg font-medium text-[var(--color-text)]">
           Trending
         </h3>
 
@@ -73,7 +73,7 @@ function TrendingItemRow({
           </div>
         ) : (
           <span
-            className="h-3 w-3 shrink-0 rounded-full"
+            className="h-2 w-2 shrink-0 rounded-full"
             style={{
               backgroundColor: item.color || "var(--color-primary)",
             }}
@@ -81,7 +81,7 @@ function TrendingItemRow({
         )}
 
         <div className="min-w-0">
-          <p className="truncate text-base text-[var(--color-text)]">
+          <p className="truncate text-sm text-[var(--color-text)]">
             {item.name}
           </p>
 
@@ -104,7 +104,7 @@ function TrendingItemRow({
         {/* Status */}
         <div className="flex items-center gap-1 text-[#168a68]">
           <ArrowUp size={15} />
-          <span className="text-base">New</span>
+          <span className="text-sm">New</span>
         </div>
       </div>
     </div>

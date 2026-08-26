@@ -71,9 +71,11 @@ export function TimezoneSelector() {
       {isOpen && (
         <div
           className="
-            absolute
-            top-full
-            right-0
+         absolute
+top-full
+left-0
+md:left-auto
+md:right-0
             z-50
             mt-1
             w-[215px]

@@ -1,9 +1,16 @@
 "use client";
-
-import { useState } from "react";
 import { LegendItem } from "../../utils/filterOptions";
-import { PanelRight, PanelBottom } from "lucide-react";
-const MAX_VALUE = 4000;
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  PanelRight,
+  PanelBottom,
+} from "lucide-react";const MAX_VALUE = 4000;
 
 const Y_AXIS_VALUES = [
   4000,
@@ -114,12 +121,44 @@ export function TokenBreakdown() {
   const [isLegendOnRight, setIsLegendOnRight] =
     useState(false);
 
-  /*
-   * SAME LOGIC AS REQUEST VOLUME
-   * Bottom legend = all active
-   * Click one = select only that item
-   * Click same again = restore all
-   */
+  /* ================= CHART RESPONSIVE SIZE ================= */
+
+  const chartContainerRef =
+    useRef<HTMLDivElement | null>(null);
+
+const chartAreaRef =
+  useRef<HTMLDivElement | null>(null);
+  const [chartWidth, setChartWidth] =
+    useState(0);
+
+  useEffect(() => {
+    const element =
+      chartContainerRef.current;
+
+    if (!element) return;
+
+    const updateWidth = () => {
+      setChartWidth(element.clientWidth);
+    };
+
+    updateWidth();
+
+    const resizeObserver =
+      new ResizeObserver(updateWidth);
+
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  /* ================= NARROW LAYOUT ================= */
+
+  const isNarrowLayout = chartWidth < 500;
+
+  /* ================= LEGEND CLICK ================= */
+
   const handleLegendClick = (key: string) => {
     setActiveSeries((prev) => {
       const isOnlySelected =
@@ -136,9 +175,8 @@ export function TokenBreakdown() {
     });
   };
 
-  /*
-   * Chart X position
-   */
+  /* ================= X POSITION ================= */
+
   const getPosition = (index: number) => {
     if (chartData.length <= 1) {
       return 0;
@@ -150,34 +188,96 @@ export function TokenBreakdown() {
     );
   };
 
-  /*
-   * Visible dates
-   */
-  const visibleDateIndexes =
-    isLegendOnRight
-      ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-      : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  /* ================= RESPONSIVE VISIBLE DATES ================= */
 
-  /*
-   * Format Y axis values
-   */
-const formatYAxisValue = (value: number) => {
-  const labelMap: Record<number, string> = {
-    4000: "3K",
-    3000: "2K",
-    2000: "1K",
-    1000: "650",
-    0: "0",
+  const visibleDateIndexes = useMemo(() => {
+    if (chartWidth === 0) {
+      return [];
+    }
+
+    /*
+     * Approximate minimum width required
+     * for one date label.
+     */
+    const averageLabelWidth = 58;
+
+    const labelsThatFit = Math.floor(
+      chartWidth / averageLabelWidth,
+    );
+
+    /*
+     * Legend on right:
+     * chart has less width.
+     *
+     * Narrow layout:
+     * fewer labels.
+     *
+     * Desktop:
+     * more labels.
+     */
+    const maxLabels = isLegendOnRight
+      ? 5
+      : isNarrowLayout
+        ? 6
+        : 12;
+
+    const minLabels = isLegendOnRight
+      ? 3
+      : 4;
+
+    const labelCount = Math.max(
+      minLabels,
+      Math.min(
+        maxLabels,
+        labelsThatFit,
+        chartData.length,
+      ),
+    );
+
+    if (labelCount >= chartData.length) {
+      return chartData.map(
+        (_, index) => index,
+      );
+    }
+
+    const step =
+      (chartData.length - 1) /
+      (labelCount - 1);
+
+    const indexes = Array.from(
+      { length: labelCount },
+      (_, index) =>
+        Math.round(index * step),
+    );
+
+    return [...new Set(indexes)];
+  }, [
+    chartWidth,
+    isNarrowLayout,
+    isLegendOnRight,
+  ]);
+
+  /* ================= Y AXIS FORMAT ================= */
+
+  const formatYAxisValue = (
+    value: number,
+  ) => {
+    const labelMap: Record<
+      number,
+      string
+    > = {
+      4000: "3K",
+      3000: "2K",
+      2000: "1K",
+      1000: "650",
+      0: "0",
+    };
+
+    return labelMap[value] ?? "";
   };
 
-  return labelMap[value] ?? "";
-};
-  /*
-   * Full bar height.
-   * Always calculate using ALL token values
-   * so when one legend is selected,
-   * the complete original bar height remains.
-   */
+  /* ================= TOTAL VALUE ================= */
+
   const getTotalValue = (
     item: (typeof chartData)[number],
   ) => {
@@ -190,6 +290,102 @@ const formatYAxisValue = (value: number) => {
       0,
     );
   };
+
+  /* ================= MOBILE / DESKTOP HOVER ================= */
+
+const updateHoveredIndex = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  const element = chartAreaRef.current;
+
+  if (!element || chartData.length === 0) {
+    return;
+  }
+
+  const rect = element.getBoundingClientRect();
+
+  const x = event.clientX - rect.left;
+
+  const percentage = Math.max(
+    0,
+    Math.min(1, x / rect.width),
+  );
+
+  const index = Math.round(
+    percentage * (chartData.length - 1),
+  );
+
+  setHoveredIndex(index);
+};
+
+const handlePointerDown = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  event.currentTarget.setPointerCapture(
+    event.pointerId,
+  );
+
+  updateHoveredIndex(event);
+};
+
+const handlePointerMove = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  updateHoveredIndex(event);
+};
+
+const handlePointerUp = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  if (
+    event.currentTarget.hasPointerCapture(
+      event.pointerId,
+    )
+  ) {
+    event.currentTarget.releasePointerCapture(
+      event.pointerId,
+    );
+  }
+};
+
+const handlePointerLeave = (
+  event: React.PointerEvent<HTMLDivElement>,
+) => {
+  // Desktop: hide when mouse leaves chart
+  if (event.pointerType === "mouse") {
+    setHoveredIndex(null);
+  }
+};
+useEffect(() => {
+  const handleOutsidePointerDown = (
+    event: PointerEvent,
+  ) => {
+    const chartElement =
+      chartAreaRef.current;
+
+    if (
+      chartElement &&
+      !chartElement.contains(
+        event.target as Node,
+      )
+    ) {
+      setHoveredIndex(null);
+    }
+  };
+
+  document.addEventListener(
+    "pointerdown",
+    handleOutsidePointerDown,
+  );
+
+  return () => {
+    document.removeEventListener(
+      "pointerdown",
+      handleOutsidePointerDown,
+    );
+  };
+}, []);
+  // ... rest of your component
 
   return (
         <div
@@ -224,7 +420,7 @@ const formatYAxisValue = (value: number) => {
         <button
           type="button"
           className="
-            text-[length:var(--font-size-sm)]
+            text-[length:var(--font-size-base)]
             text-[var(--color-text)]
             underline
             cursor-pointer
@@ -236,124 +432,134 @@ const formatYAxisValue = (value: number) => {
 
       {/* ================= MAIN LAYOUT ================= */}
 
+<div
+  className={`flex w-full ${
+    isLegendOnRight
+      ? "flex-row"
+      : "flex-col"
+  }`}
+>
+  {/* ================= CHART SECTION ================= */}
+
+  <div
+    ref={chartContainerRef}
+    className={
+      isLegendOnRight
+        ? "relative min-w-0 flex-1"
+        : "relative w-full"
+    }
+  >
+    {/* ================= CHART ================= */}
+
+    <div
+      className="relative h-[285px]"
+      onMouseLeave={() =>
+        setHoveredIndex(null)
+      }
+    >
+      {/* ================= Y AXIS LABELS ================= */}
+
       <div
-        className={`flex w-full ${
-          isLegendOnRight
-            ? "flex-row"
-            : "flex-col"
-        }`}
+        className="
+          absolute
+          left-0
+          top-0
+          h-[220px]
+          w-10
+          shrink-0
+          text-[length:var(--font-size-sm)]
+          text-[var(--color-text-muted)]
+        "
       >
-        {/* ================= CHART SECTION ================= */}
+        {Y_AXIS_VALUES.map((value) => {
+          const isTopValue =
+            value === MAX_VALUE;
 
-        <div
-          className={
-            isLegendOnRight
-              ? "relative flex-1 min-w-0"
-              : "relative w-full"
-          }
-        >
-          {/* ================= CHART ================= */}
-
-          <div
-            className="relative h-[285px]"
-            onMouseLeave={() =>
-              setHoveredIndex(null)
-            }
-          >
-            {/* ================= Y AXIS LABELS ================= */}
-
+          return (
             <div
+              key={value}
+              className="absolute -translate-y-1/2"
+              style={{
+                top: isTopValue
+                  ? "4%"
+                  : `${(
+                      (MAX_VALUE - value) /
+                      MAX_VALUE
+                    ) * 100}%`,
+              }}
+            >
+              {formatYAxisValue(value)}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ================= CHART AREA ================= */}
+
+   <div
+  ref={chartAreaRef}
+  onPointerDown={handlePointerDown}
+  onPointerMove={handlePointerMove}
+  onPointerUp={handlePointerUp}
+  onPointerLeave={handlePointerLeave}
+  className="
+    absolute
+    left-10
+    right-0
+    top-0
+    h-[220px]
+    touch-none
+    border
+    border-dashed
+    border-[var(--color-border)]
+  "
+>
+        {/* ================= HORIZONTAL GRID ================= */}
+
+        {Y_AXIS_VALUES
+          .filter((value) => value !== 0)
+          .map((value) => (
+            <div
+              key={value}
               className="
+                pointer-events-none
                 absolute
                 left-0
-                top-0
-                h-[220px]
-                w-10
-                text-[length:var(--font-size-sm)]
-                text-[var(--color-text-muted)]
-              "
-            >
-      {Y_AXIS_VALUES.map((value) => {
-  const isTopValue = value === MAX_VALUE;
-
-  return (
-    <div
-      key={value}
-      className="absolute -translate-y-1/2"
-      style={{
-        top: isTopValue
-          ? "4%"
-          : `${((MAX_VALUE - value) / MAX_VALUE) * 100}%`,
-      }}
-    >
-      {formatYAxisValue(value)}
-    </div>
-  );
-})}
-            </div>
-
-            {/* ================= CHART AREA ================= */}
-
-            <div
-              className="
-                absolute
-                left-10
                 right-0
-                top-0
-                h-[220px]
-                border
+                border-t
                 border-dashed
                 border-[var(--color-border)]
               "
-            >
-              {/* ================= HORIZONTAL GRID ================= */}
+              style={{
+                bottom: `${
+                  (value / MAX_VALUE) * 100
+                }%`,
+              }}
+            />
+          ))}
 
-              {Y_AXIS_VALUES
-                .filter((value) => value !== 0)
-                .map((value) => (
-                  <div
-                    key={value}
-                    className="
-                      pointer-events-none
-                      absolute
-                      left-0
-                      right-0
-                      border-t
-                      border-dashed
-                      border-[var(--color-border)]
-                    "
-                    style={{
-                      bottom: `${
-                        (value / MAX_VALUE) *
-                        100
-                      }%`,
-                    }}
-                  />
-                ))}
+        {/* ================= VERTICAL GRID ================= */}
 
-              {/* ================= VERTICAL GRID ================= */}
-
-              {visibleDateIndexes.map(
-                (index) => (
-                  <div
-                    key={index}
-                    className="
-                      pointer-events-none
-                      absolute
-                      top-0
-                      bottom-0
-                      w-px
-                      bg-[var(--color-border)]
-                    "
-                    style={{
-                      left: `${getPosition(
-                        index,
-                      )}%`,
-                    }}
-                  />
-                ),
-              )}
-
+        {visibleDateIndexes.map(
+          (index) => (
+            <div
+              key={index}
+              className="
+                pointer-events-none
+                absolute
+                top-0
+                bottom-0
+                w-px
+                bg-[var(--color-border)]
+              "
+              style={{
+                left: `${getPosition(
+                  index,
+                )}%`,
+              }}
+            />
+          ),
+        )}
               {/* ================= HOVER AREAS ================= */}
 
               {chartData.map(
@@ -622,7 +828,7 @@ const formatYAxisValue = (value: number) => {
                             pointer-events-none
                             absolute
                             z-50
-                            -translate-x-1/2
+                            -translate-x-full
                             rounded-md
                             border
                             border-[var(--color-border)]
@@ -761,7 +967,7 @@ const formatYAxisValue = (value: number) => {
     className="
       relative
       ml-4
-      w-[190px]
+      w-[150px]
       shrink-0
       border-l
       border-[var(--color-border)]

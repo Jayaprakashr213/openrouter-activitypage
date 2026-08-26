@@ -187,51 +187,62 @@ export function DateRangeSelector() {
   return (
     <div ref={dropdownRef} className="relative">
       {/* Trigger */}
-      <button
-        type="button"
-        onClick={() =>
-          setIsOpen((value) => !value)
-        }
-        className="
-          flex
-          h-9
-          min-w-[315px]
-          cursor-pointer
-          items-center
-          gap-2
-          rounded-md
-          border
-          border-[var(--color-border)]
-          bg-[var(--color-surface)]
-          px-3
-          text-left
-          text-[length:var(--font-size-base)]
-          text-[var(--color-text)]
-          transition-colors
-          hover:bg-[var(--color-surface-secondary)]
-        "
-      >
+     <button
+  type="button"
+  onClick={() =>
+    setIsOpen((value) => !value)
+  }
+  className="
+    flex
+    h-9
+    w-full
+    min-w-[320px]
+    sm:w-[400px]
+    md:w-[450px]
+    cursor-pointer
+    items-center
+    gap-2
+    rounded-md
+    border
+    border-[var(--color-border)]
+    bg-[var(--color-surface)]
+    px-3
+    text-left
+    text-[length:var(--font-size-base)]
+    text-[var(--color-text)]
+    transition-colors
+    hover:bg-[var(--color-surface-secondary)]
+  "
+>
         {/* Shortcut badge */}
-        <span
-          className="
-            shrink-0
-            rounded
-            border
-            border-[var(--color-border)]
-            px-1
-            py-0.5
-            text-[11px]
-            leading-none
-            text-[var(--color-text-secondary)]
-          "
-        >
-          {selectedShortcut}
-        </span>
+      <span
+  className="
+    shrink-0
+    rounded
+    border
+    border-[var(--color-border)]
+    px-1
+    py-0.5
+    text-[10px]
+    sm:text-[11px]
+    leading-none
+    text-[var(--color-text-secondary)]
+  "
+>
+  {selectedShortcut}
+</span>
 
-        {/* Full date range */}
-        <span className="flex-1 truncate">
-          {formatDateRange(selectedRange)}
-        </span>
+    <span
+  className="
+    min-w-0
+    flex-1
+    whitespace-nowrap
+    text-sm
+    sm:text-[length:var(--font-size-base)]
+  "
+>
+  {formatDateRange(selectedRange)}
+</span>
 
         <ChevronDown
           size={16}
@@ -249,11 +260,13 @@ export function DateRangeSelector() {
         <div
           className="
             absolute
-            right-0
+           
+            md:right-0
             top-full
             z-50
             mt-1
-            w-[315px]
+           w-[320px]
+sm:w-[355px]
             overflow-hidden
             rounded-md
             border
