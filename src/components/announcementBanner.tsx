@@ -19,8 +19,8 @@ export function AnnouncementBanner({
     items-center
     justify-center
     border-b
-   border-[#c9d3e8]
-bg-[#eef1f7]
+    border-[#b8c7e0]
+    bg-[#e8effb]
     px-4
     py-2
     text-xs
@@ -29,7 +29,7 @@ bg-[#eef1f7]
     sm:py-0
     sm:text-sm
   "
->   
+>
       <div
         className="
           flex
@@ -42,13 +42,10 @@ bg-[#eef1f7]
           sm:pr-0
         "
       >
-        <Sparkles
-          size={16}
-          className="
-            shrink-0
-            text-[var(--color-primary)]
-          "
-        />
+      <Sparkles
+  size={18}
+  className="shrink-0 text-[#5b3cc4]"
+/>
 
         <span className="leading-5">
           Gemini 3.7 Flash is 75% off for a limited time.{" "}
@@ -58,6 +55,7 @@ bg-[#eef1f7]
             className="
               font-medium
               underline
+              cursor-pointer
               underline-offset-2
               hover:text-[var(--color-primary)]
             "

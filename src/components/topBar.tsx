@@ -441,22 +441,23 @@ function ProfileDropdown({
 }: ProfileDropdownProps) {
   
   return (
-    <div
-      className="
-        absolute
-        right-0
-        top-12
-        z-50
-        w-64
-        max-h-[calc(100vh-5rem)]
-        overflow-y-auto
-        rounded-lg
-        border
-        border-[var(--color-border)]
-        bg-[var(--color-surface)]
-        shadow-lg
-      "
-    >
+ <div
+  className="
+    absolute
+    right-0
+    top-12
+    z-50
+    w-64
+    max-h-[calc(100vh-5rem)]
+    overflow-y-auto
+    overscroll-contain
+    rounded-lg
+    border
+    border-[var(--color-border)]
+    bg-[var(--color-surface)]
+    shadow-lg
+  "
+>
       {/* Account header */}
       <div
         className="
